@@ -1,7 +1,15 @@
-package order
+package main
 
-import "fmt"
+import (
+	"fmt"
+	"net/http"
+)
+
+func helloHandler(w http.ResponseWriter, r *http.Request) {
+	fmt.Fprintln(w, "Order service") // ✅ Отправляем строку в ответ
+}
 
 func main() {
-	fmt.Println("order service")
+	http.HandleFunc("/", helloHandler)
+	http.ListenAndServe(":8082", nil)
 }

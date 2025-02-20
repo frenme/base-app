@@ -1,2 +1,50 @@
-.idea
 .DS_Store
+
+# Go build artifacts
+/bin/
+
+# Binaries
+*.exe
+*.dll
+*.so
+*.dylib
+*.a
+*.o
+
+# Dependency directories (vendor modules)
+/vendor/
+
+# Go module files
+/go.sum
+/go.work.sum
+
+# Logs and debug files
+*.log
+*.out
+*.test
+
+# IDE and editor files
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Test and coverage files
+*.cover
+*.cov
+
+# Temporary files
+*.tmp
+*.temp
+
+# Docker-related files
+docker-compose.override.yml
+
+# Ignore Air (live reload tool) files
+.air.toml
+/tmp/
+
+# Ignore .env files
+.env
+.env.local
+.env.*.local
