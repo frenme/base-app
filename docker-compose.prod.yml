@@ -1,0 +1,35 @@
+name: "arbtr_app"
+
+services:
+  user-service:
+    build:
+      context: ./user-service
+      dockerfile: Dockerfile
+    ports:
+      - "${USER_SERVICE_PORT}:${USER_SERVICE_PORT}"
+    env_file:
+      - .env
+    environment:
+      - PORT=${USER_SERVICE_PORT}
+
+  order-service:
+    build:
+      context: ./order-service
+      dockerfile: Dockerfile
+    ports:
+      - "${ORDER_SERVICE_PORT}:${ORDER_SERVICE_PORT}"
+    env_file:
+      - .env
+    environment:
+      - PORT=${ORDER_SERVICE_PORT}
+
+  shared-service:
+    build:
+      context: ./shared-service
+      dockerfile: Dockerfile
+    ports:
+      - "${SHARED_SERVICE_PORT}:${SHARED_SERVICE_PORT}"
+    env_file:
+      - .env
+    environment:
+      - PORT=${SHARED_SERVICE_PORT}

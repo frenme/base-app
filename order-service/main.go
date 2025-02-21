@@ -1,15 +1,19 @@
 package main
 
 import (
-	"fmt"
+	"github.com/gin-gonic/gin"
 	"net/http"
+	"os"
 )
 
-func helloHandler(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprintln(w, "Order service") // ✅ Отправляем строку в ответ
-}
-
 func main() {
-	http.HandleFunc("/", helloHandler)
-	http.ListenAndServe(":8082", nil)
+	r := gin.Default()
+
+	r.GET("/", func(c *gin.Context) {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"service": "Order",
+		})
+	})
+
+	r.Run(":" + os.Getenv("ORDER_SERVICE_PORT"))
 }

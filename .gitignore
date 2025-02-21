@@ -40,8 +40,6 @@
 # Docker-related files
 docker-compose.override.yml
 
-# Ignore Air (live reload tool) files
-.air.toml
 /tmp/
 
 # Ignore .env files
