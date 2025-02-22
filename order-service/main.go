@@ -1,19 +1,26 @@
 package main
 
 import (
+	"fmt"
 	"github.com/gin-gonic/gin"
 	"net/http"
 	"os"
+	"shared/pkg/models"
+	"shared/pkg/utils"
 )
 
 func main() {
-	r := gin.Default()
+	router := gin.Default()
+	router.GET("/test", pingHandler)
+	router.Run(":" + os.Getenv("ORDER_SERVICE_PORT"))
+}
 
-	r.GET("/", func(c *gin.Context) {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"service": "Order",
-		})
+func pingHandler(c *gin.Context) {
+	user := models.User{Name: "egor1"}
+	fmt.Println(user)
+	utils.HelperCalc(123)
+
+	c.JSON(http.StatusOK, gin.H{
+		"message": user,
 	})
-
-	r.Run(":" + os.Getenv("ORDER_SERVICE_PORT"))
 }

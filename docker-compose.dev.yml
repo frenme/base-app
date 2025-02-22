@@ -1,41 +1,44 @@
-name: "arbtr_app"
+name: "arbtr-app"
 
 services:
   user-service:
+    container_name: user-service-dev
     build:
-      context: ./user-service
-      dockerfile: Dockerfile.dev
+      context: .
+      dockerfile: user-service/Dockerfile.dev
     ports:
-      - "8081:8081"
-    environment:
-      - PORT=8081
+      - "${USER_SERVICE_PORT}:${USER_SERVICE_PORT}"
     env_file:
       - .env
+    environment:
+      - PORT=${USER_SERVICE_PORT}
     volumes:
-      - ./user-service:/app
+      - .:/app
 
   order-service:
+    container_name: order-service-dev
     build:
-      context: ./order-service
-      dockerfile: Dockerfile.dev
+      context: .
+      dockerfile: order-service/Dockerfile.dev
     ports:
-      - "8082:8082"
-    environment:
-      - PORT=8082
+      - "${ORDER_SERVICE_PORT}:${ORDER_SERVICE_PORT}"
     env_file:
       - .env
+    environment:
+      - PORT=${ORDER_SERVICE_PORT}
     volumes:
-      - ./order-service:/app
+      - .:/app
 
   shared-service:
+    container_name: shared-service-dev
     build:
-      context: ./shared-service
-      dockerfile: Dockerfile.dev
+      context: .
+      dockerfile: shared-service/Dockerfile.dev
     ports:
-      - "8083:8083"
-    environment:
-      - PORT=8083
+      - "${SHARED_SERVICE_PORT}:${SHARED_SERVICE_PORT}"
     env_file:
       - .env
+    environment:
+      - PORT=${SHARED_SERVICE_PORT}
     volumes:
-      - ./shared-service:/app
+      - .:/app

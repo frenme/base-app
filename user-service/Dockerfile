@@ -2,16 +2,16 @@ FROM golang:1.24 AS builder
 
 WORKDIR /app
 
-COPY go.mod ./
-RUN go mod download
 COPY . .
 
-RUN CGO_ENABLED=0 go build -o /app/user-service main.go
+WORKDIR /app/user-service
+
+RUN go mod tidy
+RUN CGO_ENABLED=0 go build -o user-service .
 
 FROM alpine:latest
-
 WORKDIR /root/
 
-COPY --from=builder /app/user-service .
+COPY --from=builder /app/user-service/user-service .
 
 CMD ["./user-service"]

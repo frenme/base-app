@@ -2,16 +2,16 @@ FROM golang:1.24 AS builder
 
 WORKDIR /app
 
-COPY go.mod ./
-RUN go mod download
 COPY . .
 
-RUN CGO_ENABLED=0 go build -o /app/shared-service main.go
+WORKDIR /app/shared-service
+
+RUN go mod tidy
+RUN CGO_ENABLED=0 go build -o shared-service .
 
 FROM alpine:latest
-
 WORKDIR /root/
 
-COPY --from=builder /app/shared-service .
+COPY --from=builder /app/shared-service/shared-service .
 
 CMD ["./shared-service"]
