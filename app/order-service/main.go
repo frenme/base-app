@@ -11,7 +11,7 @@ import (
 
 func main() {
 	router := gin.Default()
-	router.GET("/test", pingHandler)
+	router.GET("/", pingHandler)
 	router.Run(":" + os.Getenv("ORDER_SERVICE_PORT"))
 }
 

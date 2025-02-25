@@ -4,7 +4,7 @@ services:
   user-service:
     container_name: user-service-prod
     build:
-      context: .
+      context: ..
       dockerfile: user-service/Dockerfile
     ports:
       - "${USER_SERVICE_PORT}:${USER_SERVICE_PORT}"
@@ -16,7 +16,7 @@ services:
   order-service:
     container_name: order-service-prod
     build:
-      context: .
+      context: ..
       dockerfile: order-service/Dockerfile
     ports:
       - "${ORDER_SERVICE_PORT}:${ORDER_SERVICE_PORT}"
@@ -28,7 +28,7 @@ services:
   shared-service:
     container_name: shared-service-prod
     build:
-      context: .
+      context: ..
       dockerfile: shared-service/Dockerfile
     ports:
       - "${SHARED_SERVICE_PORT}:${SHARED_SERVICE_PORT}"
