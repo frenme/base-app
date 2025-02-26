@@ -59,3 +59,14 @@ services:
     command: [ "/bin/bash", "/usr/local/bin/init-replica.sh" ]
     depends_on:
       - postgres-master
+
+  haproxy:
+    image: haproxy:latest
+    container_name: haproxy
+    ports:
+      - "5435:5432"
+    volumes:
+      - ./haproxy.cfg:/usr/local/etc/haproxy/haproxy.cfg:ro
+    depends_on:
+      - postgres-replica1
+      - postgres-replica2
