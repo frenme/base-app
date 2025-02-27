@@ -14,7 +14,7 @@ else
     --port=5432
 fi
 
-echo "waiting for primary to connect..."
+echo "waiting for master to connect..."
 sleep 5
 
 echo "Done, starting replica..."

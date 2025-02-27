@@ -11,11 +11,21 @@ x-postgres-common:
     retries: 5
 
 services:
+  haproxy:
+    image: haproxy:latest
+    container_name: haproxy
+    ports:
+      - "5432:5432"
+      - "5433:5433"
+    volumes:
+      - ./haproxy.cfg:/usr/local/etc/haproxy/haproxy.cfg:ro
+    depends_on:
+      - postgres-replica1
+      - postgres-replica2
+
   postgres-master:
     <<: *postgres-common
     container_name: postgres-master
-    ports:
-      - "5432:5432"
     environment:
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_DB: ${POSTGRES_DB}
@@ -35,11 +45,9 @@ services:
   postgres-replica1:
     <<: *postgres-common
     container_name: postgres-replica1
-    ports:
-      - "5433:5432"
     environment:
-      PGUSER: replicator
-      PGPASSWORD: replicator_password
+      PGUSER: ${REPLICA_USER}
+      PGPASSWORD: ${REPLICA_PASSWORD}
     volumes:
       - ./init-replica.sh:/usr/local/bin/init-replica.sh:ro
     command: ["/bin/bash", "/usr/local/bin/init-replica.sh"]
@@ -49,24 +57,11 @@ services:
   postgres-replica2:
     <<: *postgres-common
     container_name: postgres-replica2
-    ports:
-      - "5434:5432"
     environment:
-      PGUSER: replicator
-      PGPASSWORD: replicator_password
+      PGUSER: ${REPLICA_USER}
+      PGPASSWORD: ${REPLICA_PASSWORD}
     volumes:
       - ./init-replica.sh:/usr/local/bin/init-replica.sh:ro
     command: [ "/bin/bash", "/usr/local/bin/init-replica.sh" ]
     depends_on:
       - postgres-master
-
-  haproxy:
-    image: haproxy:latest
-    container_name: haproxy
-    ports:
-      - "5435:5432"
-    volumes:
-      - ./haproxy.cfg:/usr/local/etc/haproxy/haproxy.cfg:ro
-    depends_on:
-      - postgres-replica1
-      - postgres-replica2
