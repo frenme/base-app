@@ -1,4 +1,5 @@
-x-mongo-service: &mongo-service
+x-mongo-service:
+  &mongo-service
   image: mongo:latest
   command: ["mongod", "--config", "/etc/mongo/mongod.conf"]
   restart: always

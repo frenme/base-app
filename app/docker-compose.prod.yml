@@ -1,38 +1,35 @@
-name: "arbtr-app"
+name: golang-prod
+
+x-app-service:
+  &app-service
+  restart: always
+  env_file:
+    - .env
 
 services:
   user-service:
-    container_name: user-service-prod
+    <<: *app-service
+    container_name: user-service-golang-prod
     build:
-      context: ..
+      context: .
       dockerfile: user-service/Dockerfile
     ports:
       - "${USER_SERVICE_PORT}:${USER_SERVICE_PORT}"
-    env_file:
-      - .env
-    environment:
-      - PORT=${USER_SERVICE_PORT}
 
   order-service:
-    container_name: order-service-prod
+    <<: *app-service
+    container_name: order-service-golang-prod
     build:
-      context: ..
+      context: .
       dockerfile: order-service/Dockerfile
     ports:
       - "${ORDER_SERVICE_PORT}:${ORDER_SERVICE_PORT}"
-    env_file:
-      - .env
-    environment:
-      - PORT=${ORDER_SERVICE_PORT}
 
   shared-service:
-    container_name: shared-service-prod
+    <<: *app-service
+    container_name: shared-service-golang-prod
     build:
-      context: ..
+      context: .
       dockerfile: shared-service/Dockerfile
     ports:
       - "${SHARED_SERVICE_PORT}:${SHARED_SERVICE_PORT}"
-    env_file:
-      - .env
-    environment:
-      - PORT=${SHARED_SERVICE_PORT}

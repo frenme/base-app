@@ -11,7 +11,7 @@ func main() {
 
 	r.GET("/", func(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{
-			"service": "user",
+			"service": "user1",
 		})
 	})
 

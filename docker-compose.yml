@@ -1,0 +1,5 @@
+name: app
+
+include:
+  - app/docker-compose.dev.yml
+  - postgres/docker-compose.yml
