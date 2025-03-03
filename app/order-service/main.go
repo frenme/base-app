@@ -2,8 +2,8 @@ package main
 
 import (
 	"context"
-	"fmt"
 	"github.com/gin-gonic/gin"
+	"go.mongodb.org/mongo-driver/bson"
 	"net/http"
 	"order/internal/db"
 	"os"
@@ -11,8 +11,8 @@ import (
 )
 
 func main() {
-	db.InitPools()
-	defer db.ClosePools()
+	db.InitConnections()
+	defer db.CloseConnections()
 
 	router := gin.Default()
 	router.GET("/", pingHandler)
@@ -20,18 +20,22 @@ func main() {
 }
 
 func pingHandler(c *gin.Context) {
-	user := models.User{Name: "John Doe"}
-
-	var nameDb string
+	user := models.User{Name: "Alice"}
 	ctx := context.Background()
-	err := db.PoolMaster.QueryRow(ctx, "SELECT name FROM users").Scan(&nameDb)
-	if err != nil {
-		fmt.Println("Error in `SELECT name FROM users`")
-		fmt.Println(err)
-	}
+
+	// postgresql example
+	var postgresData string
+	db.PostgresMaster.QueryRow(ctx, "SELECT current_database()").Scan(&postgresData)
+
+	// mongodb example
+	mongoDb := db.MongoClient.Database("exampleDb")
+	collection := mongoDb.Collection("users")
+	collection.InsertOne(ctx, user)
+	mongoData, _ := collection.CountDocuments(ctx, bson.M{})
 
 	c.JSON(http.StatusOK, gin.H{
 		"object from another package": user,
-		"name from postgres":          nameDb,
+		"postgresql data":             postgresData,
+		"mongodb data":                mongoData,
 	})
 }
