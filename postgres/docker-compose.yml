@@ -1,8 +1,9 @@
-x-postgres-common:
-  &postgres-common
+x-postgres-common: &postgres-common
   image: postgres:17-alpine
   user: postgres
   restart: always
+  networks:
+    - app-shared-network
   healthcheck:
     test: 'pg_isready -U ${POSTGRES_USER} --dbname=${POSTGRES_DB}'
     interval: 10s
@@ -16,6 +17,8 @@ services:
     ports:
       - "5432:5432"
       - "5433:5433"
+    networks:
+      - app-shared-network
     volumes:
       - ./haproxy.cfg:/usr/local/etc/haproxy/haproxy.cfg:ro
     depends_on:
@@ -64,3 +67,7 @@ services:
     command: [ "/bin/bash", "/usr/local/bin/init-replica.sh" ]
     depends_on:
       - postgres-master
+
+networks:
+  app-shared-network:
+    external: true

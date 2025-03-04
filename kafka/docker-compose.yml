@@ -1,0 +1,65 @@
+x-kafka-service: &kafka-service
+  image: bitnami/kafka:latest
+  networks:
+    - kafka-network
+    - app-shared-network
+  volumes:
+    - ./log4j.properties:/opt/bitnami/kafka/config/log4j.properties
+  depends_on:
+    - zookeeper
+
+x-kafka-env: &kafka-env
+  KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+  ALLOW_PLAINTEXT_LISTENER: yes
+
+services:
+  zookeeper:
+    image: bitnami/zookeeper:latest
+    container_name: zookeeper
+    environment:
+      - ALLOW_ANONYMOUS_LOGIN=yes
+    ports:
+      - "2181:2181"
+    networks:
+      - kafka-network
+    volumes:
+      - ./logback.xml:/opt/bitnami/zookeeper/conf/logback.xml
+
+  kafka1:
+    <<: *kafka-service
+    container_name: kafka1
+    environment:
+      <<: *kafka-env
+      KAFKA_BROKER_ID: "1"
+      KAFKA_LISTENERS: PLAINTEXT://:9092
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka1:9092
+    ports:
+      - "9092:9092"
+
+  kafka2:
+    <<: *kafka-service
+    container_name: kafka2
+    environment:
+      <<: *kafka-env
+      KAFKA_BROKER_ID: "2"
+      KAFKA_LISTENERS: PLAINTEXT://:9093
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka2:9093
+    ports:
+      - "9093:9092"
+
+  kafka3:
+    <<: *kafka-service
+    container_name: kafka3
+    environment:
+      <<: *kafka-env
+      KAFKA_BROKER_ID: "3"
+      KAFKA_LISTENERS: PLAINTEXT://:9094
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka3:9094
+    ports:
+      - "9094:9092"
+
+networks:
+  kafka-network:
+    driver: bridge
+  app-shared-network:
+    external: true

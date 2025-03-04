@@ -1,14 +1,15 @@
 name: golang-prod
 
-x-app-service:
-  &app-service
+x-micro-service: &micro-service
   restart: always
+  networks:
+    - app-shared-network
   env_file:
     - .env
 
 services:
   user-service:
-    <<: *app-service
+    <<: *micro-service
     container_name: user-service-golang-prod
     build:
       context: .
@@ -17,7 +18,7 @@ services:
       - "${USER_SERVICE_PORT}:${USER_SERVICE_PORT}"
 
   order-service:
-    <<: *app-service
+    <<: *micro-service
     container_name: order-service-golang-prod
     build:
       context: .
@@ -26,10 +27,14 @@ services:
       - "${ORDER_SERVICE_PORT}:${ORDER_SERVICE_PORT}"
 
   shared-service:
-    <<: *app-service
+    <<: *micro-service
     container_name: shared-service-golang-prod
     build:
       context: .
       dockerfile: shared-service/Dockerfile
     ports:
       - "${SHARED_SERVICE_PORT}:${SHARED_SERVICE_PORT}"
+
+networks:
+  app-shared-network:
+    external: true

@@ -5,11 +5,11 @@ import (
 	"net/http"
 )
 
-func helloHandler(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprintln(w, "Shared service") // ✅ Отправляем строку в ответ
-}
-
 func main() {
 	http.HandleFunc("/", helloHandler)
 	http.ListenAndServe(":8083", nil)
+}
+
+func helloHandler(w http.ResponseWriter, r *http.Request) {
+	fmt.Fprintln(w, "Shared service")
 }

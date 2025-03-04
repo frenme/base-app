@@ -4,3 +4,4 @@ include:
   - app/docker-compose.dev.yml
   - postgres/docker-compose.yml
   - mongo/docker-compose.yml
+  - kafka/docker-compose.yml
