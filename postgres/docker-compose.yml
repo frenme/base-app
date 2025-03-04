@@ -1,4 +1,4 @@
-x-postgres-common: &postgres-common
+x-postgres-service: &postgres-service
   image: postgres:17-alpine
   user: postgres
   restart: always
@@ -26,7 +26,7 @@ services:
       - postgres-replica2
 
   postgres-master:
-    <<: *postgres-common
+    <<: *postgres-service
     container_name: postgres-master
     environment:
       POSTGRES_USER: ${POSTGRES_USER}
@@ -45,7 +45,7 @@ services:
       - ./00_init.sql:/docker-entrypoint-initdb.d/00_init.sql
 
   postgres-replica1:
-    <<: *postgres-common
+    <<: *postgres-service
     container_name: postgres-replica1
     environment:
       PGUSER: ${REPLICA_USER}
@@ -57,7 +57,7 @@ services:
       - postgres-master
 
   postgres-replica2:
-    <<: *postgres-common
+    <<: *postgres-service
     container_name: postgres-replica2
     environment:
       PGUSER: ${REPLICA_USER}

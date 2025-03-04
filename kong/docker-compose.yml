@@ -1,0 +1,20 @@
+services:
+  kong:
+    image: kong:latest
+    container_name: kong
+    restart: always
+    environment:
+      KONG_DATABASE: "off"
+      KONG_DECLARATIVE_CONFIG: /usr/local/kong/kong.yml
+    ports:
+      - "8000:8000"   # Proxy
+      - "8443:8443"   # Proxy TLS
+      - "8444:8444"   # Admin API TLS
+    networks:
+      - app-shared-network
+    volumes:
+      - ./kong.yml:/usr/local/kong/kong.yml
+
+networks:
+  app-shared-network:
+    external: true

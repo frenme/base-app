@@ -1,5 +1,6 @@
 x-kafka-service: &kafka-service
   image: bitnami/kafka:latest
+  restart: always
   networks:
     - kafka-network
     - app-shared-network
@@ -16,6 +17,7 @@ services:
   zookeeper:
     image: bitnami/zookeeper:latest
     container_name: zookeeper
+    restart: always
     environment:
       - ALLOW_ANONYMOUS_LOGIN=yes
     ports:

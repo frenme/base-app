@@ -43,14 +43,16 @@ func pingHandler(c *gin.Context) {
 	mongoData, _ := collection.CountDocuments(ctx, bson.M{})
 
 	// kafka example (order-service -> user-service)
-	createKafkaTopicIfNotExists("example-topic", 2, 2)
-	kafkaProducer()
+	go func() {
+		createKafkaTopicIfNotExists("example-topic", 2, 2)
+		kafkaProducer()
+	}()
 
 	// http response
 	c.JSON(http.StatusOK, gin.H{
 		"object from another package": user,
-		//"postgresql data":             postgresData,
-		"mongodb data": mongoData,
+		"postgresql data":             postgresData,
+		"mongodb data":                mongoData,
 	})
 }
 

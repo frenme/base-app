@@ -2,7 +2,8 @@ name: app
 
 include:
   - app/docker-compose.dev.yml
-#  - postgres/docker-compose.yml
+  - postgres/docker-compose.yml
   - mongo/docker-compose.yml
   - redis/docker-compose.yml
-#  - kafka/docker-compose.yml
+  - kafka/docker-compose.yml
+  - kong/docker-compose.yml

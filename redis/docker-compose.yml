@@ -1,5 +1,6 @@
 x-redis-service: &redis-service
   image: redis:7.4.2-alpine
+  restart: always
   networks:
     - app-shared-network
 

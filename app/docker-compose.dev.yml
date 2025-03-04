@@ -12,30 +12,30 @@ x-micro-service: &micro-service
 services:
   user-service:
     <<: *micro-service
-    container_name: user-service-golang-dev
+    container_name: user-service-golang
     build:
       context: .
       dockerfile: user-service/Dockerfile.dev
-    ports:
-      - "${USER_SERVICE_PORT}:${USER_SERVICE_PORT}"
+    expose:
+      - "${USER_SERVICE_PORT}"
 
   order-service:
     <<: *micro-service
-    container_name: order-service-golang-dev
+    container_name: order-service-golang
     build:
       context: .
       dockerfile: order-service/Dockerfile.dev
-    ports:
-      - "${ORDER_SERVICE_PORT}:${ORDER_SERVICE_PORT}"
+    expose:
+      - "${ORDER_SERVICE_PORT}"
 
   shared-service:
     <<: *micro-service
-    container_name: shared-service-golang-dev
+    container_name: shared-service-golang
     build:
       context: .
       dockerfile: shared-service/Dockerfile.dev
-    ports:
-      - "${SHARED_SERVICE_PORT}:${SHARED_SERVICE_PORT}"
+    expose:
+      - "${SHARED_SERVICE_PORT}"
 
 networks:
   app-shared-network:
