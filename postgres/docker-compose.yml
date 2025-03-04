@@ -50,9 +50,9 @@ services:
     environment:
       PGUSER: ${REPLICA_USER}
       PGPASSWORD: ${REPLICA_PASSWORD}
+    command: ["/bin/bash", "/usr/local/bin/init-replica.sh"]
     volumes:
       - ./init-replica.sh:/usr/local/bin/init-replica.sh:ro
-    command: ["/bin/bash", "/usr/local/bin/init-replica.sh"]
     depends_on:
       - postgres-master
 
@@ -62,9 +62,9 @@ services:
     environment:
       PGUSER: ${REPLICA_USER}
       PGPASSWORD: ${REPLICA_PASSWORD}
+    command: [ "/bin/bash", "/usr/local/bin/init-replica.sh" ]
     volumes:
       - ./init-replica.sh:/usr/local/bin/init-replica.sh:ro
-    command: [ "/bin/bash", "/usr/local/bin/init-replica.sh" ]
     depends_on:
       - postgres-master
 
