@@ -7,5 +7,5 @@ include:
   - redis/docker-compose.yml
   - kafka/docker-compose.yml
   - kong/docker-compose.yml
-#  - elk/docker-compose.yml
+  - elk/docker-compose.yml
 #  - grafana-prometheus/docker-compose.yml
