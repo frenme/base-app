@@ -27,9 +27,7 @@ services:
     ports:
       - "7700:7700"
     command: >
-      redis-server --port 7700 --cluster-enabled yes --cluster-config-file /data/nodes.conf --cluster-node-timeout 5000 --appendonly yes
-    volumes:
-      - ./data/7700:/data
+      redis-server --port 7700 --cluster-enabled yes --cluster-config-file /data/nodes.conf --cluster-node-timeout 5000
 
   redis-7701:
     <<: *redis-service
@@ -37,9 +35,7 @@ services:
     ports:
       - "7701:7701"
     command: >
-      redis-server --port 7701 --cluster-enabled yes --cluster-config-file /data/nodes.conf --cluster-node-timeout 5000 --appendonly yes
-    volumes:
-      - ./data/7701:/data
+      redis-server --port 7701 --cluster-enabled yes --cluster-config-file /data/nodes.conf --cluster-node-timeout 5000
 
   redis-7702:
     <<: *redis-service
@@ -47,9 +43,7 @@ services:
     ports:
       - "7702:7702"
     command: >
-      redis-server --port 7702 --cluster-enabled yes --cluster-config-file /data/nodes.conf --cluster-node-timeout 5000 --appendonly yes
-    volumes:
-      - ./data/7702:/data
+      redis-server --port 7702 --cluster-enabled yes --cluster-config-file /data/nodes.conf --cluster-node-timeout 5000
 
   redis-7703:
     <<: *redis-service
@@ -57,9 +51,7 @@ services:
     ports:
       - "7703:7703"
     command: >
-      redis-server --port 7703 --cluster-enabled yes --cluster-config-file /data/nodes.conf --cluster-node-timeout 5000 --appendonly yes
-    volumes:
-      - ./data/7703:/data
+      redis-server --port 7703 --cluster-enabled yes --cluster-config-file /data/nodes.conf --cluster-node-timeout 5000
 
   redis-7704:
     <<: *redis-service
@@ -67,9 +59,7 @@ services:
     ports:
       - "7704:7704"
     command: >
-      redis-server --port 7704 --cluster-enabled yes --cluster-config-file /data/nodes.conf --cluster-node-timeout 5000 --appendonly yes
-    volumes:
-      - ./data/7704:/data
+      redis-server --port 7704 --cluster-enabled yes --cluster-config-file /data/nodes.conf --cluster-node-timeout 5000
 
   redis-7705:
     <<: *redis-service
@@ -77,9 +67,7 @@ services:
     ports:
       - "7705:7705"
     command: >
-      redis-server --port 7705 --cluster-enabled yes --cluster-config-file /data/nodes.conf --cluster-node-timeout 5000 --appendonly yes
-    volumes:
-      - ./data/7705:/data
+      redis-server --port 7705 --cluster-enabled yes --cluster-config-file /data/nodes.conf --cluster-node-timeout 5000
 
 networks:
   app-shared-network:

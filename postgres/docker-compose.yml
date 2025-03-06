@@ -2,13 +2,16 @@ x-postgres-service: &postgres-service
   image: postgres:17-alpine
   user: postgres
   restart: always
+  command: [ "/bin/bash", "/usr/local/bin/init-replica.sh" ]
   networks:
     - app-shared-network
-  healthcheck:
-    test: 'pg_isready -U ${POSTGRES_USER} --dbname=${POSTGRES_DB}'
-    interval: 10s
-    timeout: 5s
-    retries: 5
+  environment:
+    PGUSER: ${REPLICA_USER}
+    PGPASSWORD: ${REPLICA_PASSWORD}
+  volumes:
+    - ./init-replica.sh:/usr/local/bin/init-replica.sh:ro
+  depends_on:
+    - postgres-master
 
 services:
   haproxy:
@@ -26,8 +29,12 @@ services:
       - postgres-replica2
 
   postgres-master:
-    <<: *postgres-service
+    image: postgres:17-alpine
+    user: postgres
+    restart: always
     container_name: postgres-master
+    networks:
+      - app-shared-network
     environment:
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_DB: ${POSTGRES_DB}
@@ -47,26 +54,10 @@ services:
   postgres-replica1:
     <<: *postgres-service
     container_name: postgres-replica1
-    environment:
-      PGUSER: ${REPLICA_USER}
-      PGPASSWORD: ${REPLICA_PASSWORD}
-    command: ["/bin/bash", "/usr/local/bin/init-replica.sh"]
-    volumes:
-      - ./init-replica.sh:/usr/local/bin/init-replica.sh:ro
-    depends_on:
-      - postgres-master
 
   postgres-replica2:
     <<: *postgres-service
     container_name: postgres-replica2
-    environment:
-      PGUSER: ${REPLICA_USER}
-      PGPASSWORD: ${REPLICA_PASSWORD}
-    command: [ "/bin/bash", "/usr/local/bin/init-replica.sh" ]
-    volumes:
-      - ./init-replica.sh:/usr/local/bin/init-replica.sh:ro
-    depends_on:
-      - postgres-master
 
 networks:
   app-shared-network:

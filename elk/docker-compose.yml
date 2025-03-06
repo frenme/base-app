@@ -1,0 +1,55 @@
+services:
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.10.0
+    container_name: elasticsearch
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    environment:
+      - discovery.type=single-node
+      - bootstrap.memory_lock=true
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+    ports:
+      - "9200:9200"
+      - "9300:9300"
+    networks:
+      - elk
+      - app-shared-network
+    volumes:
+      - es_data:/usr/share/elasticsearch/data
+
+  logstash:
+    image: docker.elastic.co/logstash/logstash:7.10.0
+    container_name: logstash
+    ports:
+      - "5000:5000"   # Port for receiving logs (example, TCP input)
+      - "9600:9600"   # API Logstash for monitoring
+    networks:
+      - elk
+      - app-shared-network
+    volumes:
+      - ./logstash/config/logstash.yml:/usr/share/logstash/config/logstash.yml
+      - ./logstash/pipeline:/usr/share/logstash/pipeline
+    depends_on:
+      - elasticsearch
+
+  kibana:
+    image: docker.elastic.co/kibana/kibana:7.10.0
+    container_name: kibana
+    ports:
+      - "5601:5601"
+    networks:
+      - elk
+      - app-shared-network
+    depends_on:
+      - elasticsearch
+
+volumes:
+  es_data:
+
+networks:
+  elk:
+    driver: bridge
+  app-shared-network:
+    external: true

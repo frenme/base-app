@@ -1,12 +1,12 @@
 #!/bin/bash
 set -e
 
-PGDATA="/var/lib/postgresql/data"
+sleep 15
 
+PGDATA="/var/lib/postgresql/data"
 if [ "$(ls -A "$PGDATA" 2>/dev/null)" ]; then
   echo "Data directory $PGDATA is not empty, skip pg_basebackup..."
 else
-  echo "Data directory $PGDATA is not empty, skip pg_basebackup..."
   pg_basebackup \
     --pgdata="$PGDATA" \
     -R \

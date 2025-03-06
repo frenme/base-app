@@ -52,7 +52,7 @@ services:
     networks:
       - app-shared-network
     entrypoint: >
-      bash -c "sleep 30 && echo 'Initializing replica set' &&
+      bash -c "sleep 45 && echo 'Initializing replica set' &&
       mongosh --host mongo1:27017 -u ${MONGO_USERNAME} -p ${MONGO_PASSWORD} --authenticationDatabase admin --eval \"rs.initiate({
         _id: 'rs0',
         members: [
