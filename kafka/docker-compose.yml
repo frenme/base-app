@@ -20,8 +20,8 @@ services:
     restart: always
     environment:
       - ALLOW_ANONYMOUS_LOGIN=yes
-    ports:
-      - "2181:2181"
+    expose:
+      - "2181"
     networks:
       - kafka-network
     volumes:
@@ -36,8 +36,8 @@ services:
       KAFKA_BROKER_ID: "1"
       KAFKA_LISTENERS: PLAINTEXT://:9092
       KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka1:9092
-    ports:
-      - "9092:9092"
+    expose:
+      - "9092"
     volumes:
       - ./log4j.properties:/opt/bitnami/kafka/config/log4j.properties
       - kafka1_data:/bitnami/kafka
@@ -50,8 +50,8 @@ services:
       KAFKA_BROKER_ID: "2"
       KAFKA_LISTENERS: PLAINTEXT://:9093
       KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka2:9093
-    ports:
-      - "9093:9093"
+    expose:
+      - "9093"
     volumes:
       - ./log4j.properties:/opt/bitnami/kafka/config/log4j.properties
       - kafka2_data:/bitnami/kafka
@@ -64,8 +64,8 @@ services:
       KAFKA_BROKER_ID: "3"
       KAFKA_LISTENERS: PLAINTEXT://:9094
       KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka3:9094
-    ports:
-      - "9094:9094"
+    expose:
+      - "9094"
     volumes:
       - ./log4j.properties:/opt/bitnami/kafka/config/log4j.properties
       - kafka3_data:/bitnami/kafka

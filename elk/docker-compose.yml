@@ -1,6 +1,6 @@
 services:
   elasticsearch:
-    image: docker.elastic.co/elasticsearch/elasticsearch:7.10.0
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.17.3
     container_name: elasticsearch
     ulimits:
       memlock:
@@ -20,10 +20,10 @@ services:
       - es_data:/usr/share/elasticsearch/data
 
   logstash:
-    image: docker.elastic.co/logstash/logstash:7.10.0
+    image: docker.elastic.co/logstash/logstash:8.17.3
     container_name: logstash
     ports:
-      - "5000:5000"   # Port for receiving logs (example, TCP input)
+      - "5044:5044"   # Port for receiving logs (example, TCP input)
       - "9600:9600"   # API Logstash for monitoring
     networks:
       - elk
@@ -35,7 +35,7 @@ services:
       - elasticsearch
 
   kibana:
-    image: docker.elastic.co/kibana/kibana:7.10.0
+    image: docker.elastic.co/kibana/kibana:8.17.3
     container_name: kibana
     ports:
       - "5601:5601"

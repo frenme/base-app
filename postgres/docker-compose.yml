@@ -15,9 +15,9 @@ services:
   haproxy:
     image: haproxy:latest
     container_name: haproxy
-    ports:
-      - "5432:5432"
-      - "5433:5433"
+    expose:
+      - "5432"
+      - "5433"
     networks:
       - app-shared-network
     volumes:

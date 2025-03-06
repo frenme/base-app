@@ -12,8 +12,8 @@ services:
   mongo1:
     <<: *mongo-service
     container_name: mongo1
-    ports:
-      - "27017:27017"
+    expose:
+      - "27017"
     volumes:
       - mongo1_data:/data/db
       - ./mongod.conf:/etc/mongo/mongod.conf:ro
@@ -22,8 +22,8 @@ services:
   mongo2:
     <<: *mongo-service
     container_name: mongo2
-    ports:
-      - "27018:27017"
+    expose:
+      - "27018"
     volumes:
       - mongo2_data:/data/db
       - ./mongod.conf:/etc/mongo/mongod.conf:ro
@@ -32,8 +32,8 @@ services:
   mongo3:
     <<: *mongo-service
     container_name: mongo3
-    ports:
-      - "27019:27017"
+    expose:
+      - "27019"
     volumes:
       - mongo3_data:/data/db
       - ./mongod.conf:/etc/mongo/mongod.conf:ro

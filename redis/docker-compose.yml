@@ -24,48 +24,48 @@ services:
   redis-7700:
     <<: *redis-service
     container_name: redis-7700
-    ports:
-      - "7700:7700"
+    expose:
+      - "7700"
     command: >
       redis-server --port 7700 --cluster-enabled yes --cluster-config-file /data/nodes.conf --cluster-node-timeout 5000
 
   redis-7701:
     <<: *redis-service
     container_name: redis-7701
-    ports:
-      - "7701:7701"
+    expose:
+      - "7701"
     command: >
       redis-server --port 7701 --cluster-enabled yes --cluster-config-file /data/nodes.conf --cluster-node-timeout 5000
 
   redis-7702:
     <<: *redis-service
     container_name: redis-7702
-    ports:
-      - "7702:7702"
+    expose:
+      - "7702"
     command: >
       redis-server --port 7702 --cluster-enabled yes --cluster-config-file /data/nodes.conf --cluster-node-timeout 5000
 
   redis-7703:
     <<: *redis-service
     container_name: redis-7703
-    ports:
-      - "7703:7703"
+    expose:
+      - "7703"
     command: >
       redis-server --port 7703 --cluster-enabled yes --cluster-config-file /data/nodes.conf --cluster-node-timeout 5000
 
   redis-7704:
     <<: *redis-service
     container_name: redis-7704
-    ports:
-      - "7704:7704"
+    expose:
+      - "7704"
     command: >
       redis-server --port 7704 --cluster-enabled yes --cluster-config-file /data/nodes.conf --cluster-node-timeout 5000
 
   redis-7705:
     <<: *redis-service
     container_name: redis-7705
-    ports:
-      - "7705:7705"
+    expose:
+      - "7705"
     command: >
       redis-server --port 7705 --cluster-enabled yes --cluster-config-file /data/nodes.conf --cluster-node-timeout 5000
 
