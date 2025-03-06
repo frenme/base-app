@@ -4,14 +4,14 @@ x-kafka-service: &kafka-service
   networks:
     - kafka-network
     - app-shared-network
-  volumes:
-    - ./log4j.properties:/opt/bitnami/kafka/config/log4j.properties
   depends_on:
     - zookeeper
 
 x-kafka-env: &kafka-env
   KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
   ALLOW_PLAINTEXT_LISTENER: yes
+  KAFKA_DEFAULT_REPLICATION_FACTOR: 3
+  KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 3
 
 services:
   zookeeper:
@@ -26,6 +26,7 @@ services:
       - kafka-network
     volumes:
       - ./logback.xml:/opt/bitnami/zookeeper/conf/logback.xml
+      - zookeeper_data:/bitnami/zookeeper
 
   kafka1:
     <<: *kafka-service
@@ -37,6 +38,9 @@ services:
       KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka1:9092
     ports:
       - "9092:9092"
+    volumes:
+      - ./log4j.properties:/opt/bitnami/kafka/config/log4j.properties
+      - kafka1_data:/bitnami/kafka
 
   kafka2:
     <<: *kafka-service
@@ -47,7 +51,10 @@ services:
       KAFKA_LISTENERS: PLAINTEXT://:9093
       KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka2:9093
     ports:
-      - "9093:9092"
+      - "9093:9093"
+    volumes:
+      - ./log4j.properties:/opt/bitnami/kafka/config/log4j.properties
+      - kafka2_data:/bitnami/kafka
 
   kafka3:
     <<: *kafka-service
@@ -58,10 +65,19 @@ services:
       KAFKA_LISTENERS: PLAINTEXT://:9094
       KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka3:9094
     ports:
-      - "9094:9092"
+      - "9094:9094"
+    volumes:
+      - ./log4j.properties:/opt/bitnami/kafka/config/log4j.properties
+      - kafka3_data:/bitnami/kafka
 
 networks:
   kafka-network:
     driver: bridge
   app-shared-network:
     external: true
+
+volumes:
+  zookeeper_data:
+  kafka1_data:
+  kafka2_data:
+  kafka3_data:

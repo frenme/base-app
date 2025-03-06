@@ -22,6 +22,10 @@ func main() {
 	db.InitConnections()
 	defer db.CloseConnections()
 
+	go func() {
+		createKafkaTopicIfNotExists("example-topic", 2, 2)
+	}()
+
 	router := gin.Default()
 	router.GET("/", pingHandler)
 	router.GET("/redis", redisHandler)
@@ -44,7 +48,6 @@ func pingHandler(c *gin.Context) {
 
 	// kafka example (order-service -> user-service)
 	go func() {
-		createKafkaTopicIfNotExists("example-topic", 2, 2)
 		kafkaProducer()
 	}()
 
@@ -127,12 +130,14 @@ func kafkaProducer() {
 func createKafkaTopicIfNotExists(topic string, numPartitions, replicationFactor int) {
 	brokers := strings.Split(os.Getenv("KAFKA_BROKERS"), ",")
 	conn, _ := kafka.Dial("tcp", brokers[0])
+	conn.SetDeadline(time.Now().Add(10 * time.Second))
 	defer conn.Close()
 
-	exists := kafkaTopicExists(conn, topic)
-	if exists {
-		return
-	}
+	controller, _ := conn.Controller()
+	controllerAddr := fmt.Sprintf("%s:%d", controller.Host, controller.Port)
+	controllerConn, _ := kafka.Dial("tcp", controllerAddr)
+	defer controllerConn.Close()
+	controllerConn.SetDeadline(time.Now().Add(10 * time.Second))
 
 	topicConfigs := []kafka.TopicConfig{
 		{
@@ -142,22 +147,13 @@ func createKafkaTopicIfNotExists(topic string, numPartitions, replicationFactor 
 		},
 	}
 
-	err := conn.CreateTopics(topicConfigs...)
+	err := controllerConn.CreateTopics(topicConfigs...)
 	if err != nil {
-		log.Fatalf("Kafka failed to create topic: %v", err)
-	}
-	log.Println("Kafka topic created successfully")
-}
-
-func kafkaTopicExists(conn *kafka.Conn, topic string) bool {
-	partitions, err := conn.ReadPartitions()
-	if err != nil {
-		return false
-	}
-	for _, p := range partitions {
-		if p.Topic == topic {
-			return true
+		if strings.Contains(err.Error(), "TopicExists") {
+			log.Printf("Topic %s already exists", topic)
+			return
 		}
+		log.Fatalf("Failed to create topic: %v", err)
 	}
-	return false
+	log.Printf("Topic %s created successfully", topic)
 }

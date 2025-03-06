@@ -8,8 +8,6 @@ x-postgres-service: &postgres-service
   environment:
     PGUSER: ${REPLICA_USER}
     PGPASSWORD: ${REPLICA_PASSWORD}
-  volumes:
-    - ./init-replica.sh:/usr/local/bin/init-replica.sh:ro
   depends_on:
     - postgres-master
 
@@ -49,16 +47,29 @@ services:
       -c max_replication_slots=10 
       -c hot_standby_feedback=on
     volumes:
+      - postgres_master_data:/var/lib/postgresql/data
       - ./00_init.sql:/docker-entrypoint-initdb.d/00_init.sql
 
   postgres-replica1:
     <<: *postgres-service
     container_name: postgres-replica1
+    volumes:
+      - postgres_replica1_data:/var/lib/postgresql/data
+      - ./init-replica.sh:/usr/local/bin/init-replica.sh:ro
 
   postgres-replica2:
     <<: *postgres-service
     container_name: postgres-replica2
+    volumes:
+      - postgres_replica2_data:/var/lib/postgresql/data
+      - ./init-replica.sh:/usr/local/bin/init-replica.sh:ro
 
 networks:
   app-shared-network:
     external: true
+
+
+volumes:
+  postgres_master_data:
+  postgres_replica1_data:
+  postgres_replica2_data:
