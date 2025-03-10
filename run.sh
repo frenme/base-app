@@ -1,6 +1,6 @@
 #!/bin/bash
 
-dirs=("app" "kafka" "kong" "grafana-prometheus")
+dirs=("app" "kong" "kafka" "redis" "mongo" "postgres")
 
 for dir in "${dirs[@]}"; do
   echo "Starting service: $dir..."
