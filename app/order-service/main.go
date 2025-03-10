@@ -19,8 +19,8 @@ import (
 )
 
 func main() {
-	db.InitConnections()
-	defer db.CloseConnections()
+	//db.InitConnections()
+	//defer db.CloseConnections()
 
 	go func() {
 		createKafkaTopicIfNotExists("example-topic", 2, 2)
@@ -34,17 +34,19 @@ func main() {
 
 func pingHandler(c *gin.Context) {
 	user := models.User{Name: "Alice"}
-	ctx := context.Background()
+	//ctx := context.Background()
+
+	log.Printf("ORDER_SERVICE: Order created #123")
 
 	// postgres example
-	var postgresData string
-	db.PostgresMaster.QueryRow(ctx, "SELECT current_database()").Scan(&postgresData)
-
-	// mongo example
-	mongoDb := db.MongoClient.Database("exampleDb")
-	collection := mongoDb.Collection("users")
-	collection.InsertOne(ctx, user)
-	mongoData, _ := collection.CountDocuments(ctx, bson.M{})
+	//var postgresData string
+	//db.PostgresMaster.QueryRow(ctx, "SELECT current_database()").Scan(&postgresData)
+	//
+	//// mongo example
+	//mongoDb := db.MongoClient.Database("exampleDb")
+	//collection := mongoDb.Collection("users")
+	//collection.InsertOne(ctx, user)
+	//mongoData, _ := collection.CountDocuments(ctx, bson.M{})
 
 	// kafka example (order-service -> user-service)
 	go func() {
@@ -54,8 +56,8 @@ func pingHandler(c *gin.Context) {
 	// http response
 	c.JSON(http.StatusOK, gin.H{
 		"object from another package": user,
-		"postgresql data":             postgresData,
-		"mongodb data":                mongoData,
+		//"postgresql data":             postgresData,
+		//"mongodb data":                mongoData,
 	})
 }
 
