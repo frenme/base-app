@@ -6,6 +6,10 @@ x-micro-service: &micro-service
     - .env
   volumes:
     - .:/app
+  logging:
+    options:
+      max-size: "10m"
+      max-file: "3"
 
 services:
   user-service:

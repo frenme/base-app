@@ -12,6 +12,10 @@ services:
       - "8001:8001"  # Admin API порт (HTTP)
     networks:
       - app-shared-network
+    logging:
+      options:
+        max-size: "10m"
+        max-file: "3"
     volumes:
       - ./kong.yml:/usr/local/kong/kong.yml
 

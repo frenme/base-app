@@ -2,18 +2,22 @@ x-mongo-service: &mongo-service
   image: mongo:latest
   command: ["mongod", "--config", "/etc/mongo/mongod.conf"]
   restart: always
+  expose:
+    - "27017"
   networks:
     - app-shared-network
   environment:
     MONGO_INITDB_ROOT_USERNAME: ${MONGO_USERNAME}
     MONGO_INITDB_ROOT_PASSWORD: ${MONGO_PASSWORD}
+  logging:
+    options:
+      max-size: "10m"
+      max-file: "3"
 
 services:
   mongo1:
     <<: *mongo-service
     container_name: mongo1
-    expose:
-      - "27017"
     volumes:
       - mongo1_data:/data/db
       - ./mongod.conf:/etc/mongo/mongod.conf:ro
@@ -22,8 +26,6 @@ services:
   mongo2:
     <<: *mongo-service
     container_name: mongo2
-    expose:
-      - "27018"
     volumes:
       - mongo2_data:/data/db
       - ./mongod.conf:/etc/mongo/mongod.conf:ro
@@ -32,8 +34,6 @@ services:
   mongo3:
     <<: *mongo-service
     container_name: mongo3
-    expose:
-      - "27019"
     volumes:
       - mongo3_data:/data/db
       - ./mongod.conf:/etc/mongo/mongod.conf:ro

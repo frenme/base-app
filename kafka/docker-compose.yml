@@ -4,6 +4,10 @@ x-kafka-service: &kafka-service
   networks:
     - kafka-network
     - app-shared-network
+  logging:
+    options:
+      max-size: "10m"
+      max-file: "3"
   depends_on:
     - zookeeper
 
@@ -24,6 +28,10 @@ services:
       - "2181"
     networks:
       - kafka-network
+    logging:
+      options:
+        max-size: "10m"
+        max-file: "3"
     volumes:
       - ./logback.xml:/opt/bitnami/zookeeper/conf/logback.xml
       - zookeeper_data:/bitnami/zookeeper

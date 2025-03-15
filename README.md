@@ -1,8 +1,7 @@
 Template golang app
 
-Добавить ограничение логирования в каждый контейнер
-
 1) docker network create app-shared-network
 2) run **mongo/create-keyfile.sh**
-3) docker compose up setup
-4) docker compose up
+3) chmod +x run.sh
+4) chmod +x stop.sh
+5) ./run.sh

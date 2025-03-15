@@ -8,6 +8,10 @@ x-postgres-service: &postgres-service
   environment:
     PGUSER: ${REPLICA_USER}
     PGPASSWORD: ${REPLICA_PASSWORD}
+  logging:
+    options:
+      max-size: "10m"
+      max-file: "3"
   depends_on:
     - postgres-master
 
@@ -20,6 +24,10 @@ services:
       - "5433"
     networks:
       - app-shared-network
+    logging:
+      options:
+        max-size: "10m"
+        max-file: "3"
     volumes:
       - ./haproxy.cfg:/usr/local/etc/haproxy/haproxy.cfg:ro
     depends_on:
@@ -46,6 +54,10 @@ services:
       -c max_wal_senders=10 
       -c max_replication_slots=10 
       -c hot_standby_feedback=on
+    logging:
+      options:
+        max-size: "10m"
+        max-file: "3"
     volumes:
       - postgres_master_data:/var/lib/postgresql/data
       - ./00_init.sql:/docker-entrypoint-initdb.d/00_init.sql
