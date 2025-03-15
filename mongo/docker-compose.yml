@@ -1,0 +1,73 @@
+x-mongo-service: &mongo-service
+  image: mongo:latest
+  command: ["mongod", "--config", "/etc/mongo/mongod.conf"]
+  restart: always
+  networks:
+    - app-shared-network
+  environment:
+    MONGO_INITDB_ROOT_USERNAME: ${MONGO_USERNAME}
+    MONGO_INITDB_ROOT_PASSWORD: ${MONGO_PASSWORD}
+
+services:
+  mongo1:
+    <<: *mongo-service
+    container_name: mongo1
+    expose:
+      - "27017"
+    volumes:
+      - mongo1_data:/data/db
+      - ./mongod.conf:/etc/mongo/mongod.conf:ro
+      - ./mongodb-keyfile:/etc/mongo/mongodb-keyfile:ro
+
+  mongo2:
+    <<: *mongo-service
+    container_name: mongo2
+    expose:
+      - "27018"
+    volumes:
+      - mongo2_data:/data/db
+      - ./mongod.conf:/etc/mongo/mongod.conf:ro
+      - ./mongodb-keyfile:/etc/mongo/mongodb-keyfile:ro
+
+  mongo3:
+    <<: *mongo-service
+    container_name: mongo3
+    expose:
+      - "27019"
+    volumes:
+      - mongo3_data:/data/db
+      - ./mongod.conf:/etc/mongo/mongod.conf:ro
+      - ./mongodb-keyfile:/etc/mongo/mongodb-keyfile:ro
+
+  mongo-setup:
+    image: mongo:latest
+    container_name: mongo-setup
+    depends_on:
+      - mongo1
+      - mongo2
+      - mongo3
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_USERNAME}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_PASSWORD}
+    networks:
+      - app-shared-network
+    entrypoint: >
+      bash -c "sleep 45 && echo 'Initializing replica set' &&
+      mongosh --host mongo1:27017 -u ${MONGO_USERNAME} -p ${MONGO_PASSWORD} --authenticationDatabase admin --eval \"rs.initiate({
+        _id: 'rs0',
+        members: [
+          { _id: 0, host: 'mongo1:27017' },
+          { _id: 1, host: 'mongo2:27017' },
+          { _id: 2, host: 'mongo3:27017' }
+        ]
+      })\" &&
+      echo 'Replica set initiated' && sleep 5"
+
+networks:
+  app-shared-network:
+    external: true
+
+volumes:
+  mongo1_data:
+  mongo2_data:
+  mongo3_data:

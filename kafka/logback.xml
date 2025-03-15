@@ -1,0 +1,4 @@
+<?xml version="1.0"?>
+<root level="WARN">
+  <appender-ref ref="CONSOLE"/>
+</root>

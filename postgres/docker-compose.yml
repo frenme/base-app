@@ -1,0 +1,75 @@
+x-postgres-service: &postgres-service
+  image: postgres:17-alpine
+  user: postgres
+  restart: always
+  command: [ "/bin/bash", "/usr/local/bin/init-replica.sh" ]
+  networks:
+    - app-shared-network
+  environment:
+    PGUSER: ${REPLICA_USER}
+    PGPASSWORD: ${REPLICA_PASSWORD}
+  depends_on:
+    - postgres-master
+
+services:
+  haproxy:
+    image: haproxy:latest
+    container_name: haproxy
+    expose:
+      - "5432"
+      - "5433"
+    networks:
+      - app-shared-network
+    volumes:
+      - ./haproxy.cfg:/usr/local/etc/haproxy/haproxy.cfg:ro
+    depends_on:
+      - postgres-replica1
+      - postgres-replica2
+
+  postgres-master:
+    image: postgres:17-alpine
+    user: postgres
+    restart: always
+    container_name: postgres-master
+    networks:
+      - app-shared-network
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_HOST_AUTH_METHOD: "scram-sha-256\nhost replication all 0.0.0.0/0 md5"
+      POSTGRES_INITDB_ARGS: "--auth-host=scram-sha-256"
+    command: |
+      postgres 
+      -c wal_level=replica 
+      -c hot_standby=on 
+      -c max_wal_senders=10 
+      -c max_replication_slots=10 
+      -c hot_standby_feedback=on
+    volumes:
+      - postgres_master_data:/var/lib/postgresql/data
+      - ./00_init.sql:/docker-entrypoint-initdb.d/00_init.sql
+
+  postgres-replica1:
+    <<: *postgres-service
+    container_name: postgres-replica1
+    volumes:
+      - postgres_replica1_data:/var/lib/postgresql/data
+      - ./init-replica.sh:/usr/local/bin/init-replica.sh:ro
+
+  postgres-replica2:
+    <<: *postgres-service
+    container_name: postgres-replica2
+    volumes:
+      - postgres_replica2_data:/var/lib/postgresql/data
+      - ./init-replica.sh:/usr/local/bin/init-replica.sh:ro
+
+networks:
+  app-shared-network:
+    external: true
+
+
+volumes:
+  postgres_master_data:
+  postgres_replica1_data:
+  postgres_replica2_data:

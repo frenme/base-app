@@ -1,0 +1,74 @@
+x-redis-service: &redis-service
+  image: redis:7.4.2-alpine
+  restart: always
+  networks:
+    - app-shared-network
+
+services:
+  redis-setup:
+    image: redis:7.4.2-alpine
+    container_name: redis-setup
+    entrypoint: [ "/bin/sh", "/setup.sh" ]
+    networks:
+      - app-shared-network
+    volumes:
+      - ./setup.sh:/setup.sh
+    depends_on:
+      - redis-7700
+      - redis-7701
+      - redis-7702
+      - redis-7703
+      - redis-7704
+      - redis-7705
+
+  redis-7700:
+    <<: *redis-service
+    container_name: redis-7700
+    expose:
+      - "7700"
+    command: >
+      redis-server --port 7700 --cluster-enabled yes --cluster-config-file /data/nodes.conf --cluster-node-timeout 5000
+
+  redis-7701:
+    <<: *redis-service
+    container_name: redis-7701
+    expose:
+      - "7701"
+    command: >
+      redis-server --port 7701 --cluster-enabled yes --cluster-config-file /data/nodes.conf --cluster-node-timeout 5000
+
+  redis-7702:
+    <<: *redis-service
+    container_name: redis-7702
+    expose:
+      - "7702"
+    command: >
+      redis-server --port 7702 --cluster-enabled yes --cluster-config-file /data/nodes.conf --cluster-node-timeout 5000
+
+  redis-7703:
+    <<: *redis-service
+    container_name: redis-7703
+    expose:
+      - "7703"
+    command: >
+      redis-server --port 7703 --cluster-enabled yes --cluster-config-file /data/nodes.conf --cluster-node-timeout 5000
+
+  redis-7704:
+    <<: *redis-service
+    container_name: redis-7704
+    expose:
+      - "7704"
+    command: >
+      redis-server --port 7704 --cluster-enabled yes --cluster-config-file /data/nodes.conf --cluster-node-timeout 5000
+
+  redis-7705:
+    <<: *redis-service
+    container_name: redis-7705
+    expose:
+      - "7705"
+    command: >
+      redis-server --port 7705 --cluster-enabled yes --cluster-config-file /data/nodes.conf --cluster-node-timeout 5000
+
+networks:
+  app-shared-network:
+    external: true

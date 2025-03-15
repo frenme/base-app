@@ -1,0 +1,49 @@
+name: golang-dev
+
+x-micro-service: &micro-service
+  restart: always
+  env_file:
+    - .env
+  volumes:
+    - .:/app
+
+services:
+  user-service:
+    <<: *micro-service
+    build:
+      context: .
+      dockerfile: user-service/Dockerfile.dev
+    networks:
+      app-shared-network:
+        aliases:
+          - user-service-golang
+    expose:
+      - "${USER_SERVICE_PORT}"
+
+  order-service:
+    <<: *micro-service
+    build:
+      context: .
+      dockerfile: order-service/Dockerfile.dev
+    networks:
+      app-shared-network:
+        aliases:
+          - order-service-golang
+    expose:
+      - "${ORDER_SERVICE_PORT}"
+
+  shared-service:
+    <<: *micro-service
+    build:
+      context: .
+      dockerfile: shared-service/Dockerfile.dev
+    networks:
+      app-shared-network:
+        aliases:
+          - shared-service-golang
+    expose:
+      - "${SHARED_SERVICE_PORT}"
+
+networks:
+  app-shared-network:
+    external: true

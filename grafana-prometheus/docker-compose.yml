@@ -1,0 +1,46 @@
+services:
+  grafana:
+    image: grafana/grafana:latest
+    container_name: grafana
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_PASSWORD}
+      - GF_LOG_LEVEL=warn
+    ports:
+      - "3000:3000"
+    networks:
+      - monitoring
+      - app-shared-network
+    depends_on:
+      - prometheus
+
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: prometheus
+    expose:
+      - "9090"
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+    networks:
+      - monitoring
+      - app-shared-network
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+
+  node-exporter:
+    image: prom/node-exporter:latest
+    container_name: node-exporter
+    expose:
+      - "9100"
+    command:
+      - '--path.rootfs=/host'
+    volumes:
+      - /:/host:ro
+    networks:
+      - monitoring
+      - app-shared-network
+
+networks:
+  monitoring:
+    driver: bridge
+  app-shared-network:
+    external: true
