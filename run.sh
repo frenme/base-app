@@ -6,8 +6,8 @@ for dir in "${dirs[@]}"; do
   echo "Starting service: $dir..."
   cd "$dir" || exit 1
 
-  if [ "$dir" == "service_with_scale" ]; then
-    docker compose up -d --scale shared-service=3
+  if [ "$dir" == "app" ]; then
+    docker compose up -d --scale user-service=2
   elif [ "$dir" == "elk" ]; then
     docker compose up setup
     docker compose up -d

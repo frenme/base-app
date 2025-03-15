@@ -17,8 +17,14 @@ func main() {
 
 	r := gin.Default()
 	r.GET("/", func(c *gin.Context) {
+		hostname, err := os.Hostname()
+		if err != nil {
+			return
+		}
+
 		c.JSON(http.StatusOK, gin.H{
-			"service": "user1",
+			"service":  "user-service",
+			"hostname": hostname,
 		})
 	})
 	r.Run(":" + os.Getenv("USER_SERVICE_PORT"))
