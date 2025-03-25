@@ -21,11 +21,15 @@ import (
 )
 
 var logger *slog.Logger
+var writer *kafka.Writer
 
 func init() {
 	baseHandler := slog.NewJSONHandler(os.Stdout, nil)
 	handler := utils.LoggerHandler{Handler: baseHandler}
 	logger = slog.New(handler)
+
+	var brokers = strings.Split(os.Getenv("KAFKA_BROKERS"), ",")
+	writer = &kafka.Writer{Addr: kafka.TCP(brokers...), Topic: "example-topic", Balancer: &kafka.RoundRobin{}}
 }
 
 func main() {
@@ -34,12 +38,12 @@ func main() {
 
 	gin.SetMode(gin.ReleaseMode)
 	router := gin.Default()
-	router.GET("/", pingHandler)
+	router.GET("/", httpRequestHandler)
 	router.GET("/redis", redisHandler)
 	router.Run(":" + os.Getenv("ORDER_SERVICE_PORT"))
 }
 
-func pingHandler(c *gin.Context) {
+func httpRequestHandler(c *gin.Context) {
 	user := models.User{Name: "Alice"}
 	ctx := context.Background()
 
@@ -115,9 +119,6 @@ func redisHandler(c *gin.Context) {
 }
 
 // KAFKA --------------------------
-var brokers = strings.Split(os.Getenv("KAFKA_BROKERS"), ",")
-var writer = &kafka.Writer{Addr: kafka.TCP(brokers...), Topic: "example-topic", Balancer: &kafka.RoundRobin{}}
-
 func kafkaProducer() {
 	err := writer.WriteMessages(context.Background(),
 		kafka.Message{
