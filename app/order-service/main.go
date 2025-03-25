@@ -10,13 +10,23 @@ import (
 	"github.com/segmentio/kafka-go"
 	"go.mongodb.org/mongo-driver/bson"
 	"log"
+	"log/slog"
 	"net/http"
 	"order/internal/db"
 	"os"
 	"shared/pkg/models"
+	"shared/pkg/utils"
 	"strings"
 	"time"
 )
+
+var logger *slog.Logger
+
+func init() {
+	baseHandler := slog.NewJSONHandler(os.Stdout, nil)
+	handler := utils.LoggerHandler{Handler: baseHandler}
+	logger = slog.New(handler)
+}
 
 func main() {
 	db.InitConnections()
@@ -33,7 +43,7 @@ func pingHandler(c *gin.Context) {
 	user := models.User{Name: "Alice"}
 	ctx := context.Background()
 
-	log.Printf("ORDER_SERVICE: Order created #123")
+	logger.Info("Order created #123")
 
 	// postgres example
 	var postgresData string
@@ -106,11 +116,7 @@ func redisHandler(c *gin.Context) {
 
 // KAFKA --------------------------
 var brokers = strings.Split(os.Getenv("KAFKA_BROKERS"), ",")
-var writer = &kafka.Writer{
-	Addr:     kafka.TCP(brokers...),
-	Topic:    "example-topic",
-	Balancer: &kafka.RoundRobin{},
-}
+var writer = &kafka.Writer{Addr: kafka.TCP(brokers...), Topic: "example-topic", Balancer: &kafka.RoundRobin{}}
 
 func kafkaProducer() {
 	err := writer.WriteMessages(context.Background(),
