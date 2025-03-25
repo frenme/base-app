@@ -21,14 +21,13 @@ services:
   kafka-setup:
     image: bitnami/kafka:latest
     container_name: kafka-setup
-    entrypoint: [ "/bin/bash", "/init-topics.sh" ]
+    entrypoint: [ "/bin/bash", "/setup.sh" ]
     environment:
       - BOOTSTRAP_SERVER=kafka1:9092
     networks:
       - kafka-network
-      - app-shared-network
     volumes:
-      - ./init-topics.sh:/init-topics.sh
+      - ./setup.sh:/setup.sh
     depends_on:
       - kafka1
       - kafka2

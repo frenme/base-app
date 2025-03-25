@@ -1,5 +1,7 @@
 #!/bin/bash
 
+chmod +x kafka/setup.sh redis/setup.sh mongo/setup.sh mongo/create-keyfile.sh
+
 dirs=("app" "kong" "kafka" "redis" "mongo" "postgres")
 
 for dir in "${dirs[@]}"; do

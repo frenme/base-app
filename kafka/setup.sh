@@ -7,12 +7,11 @@ TOPICS_LIST=(
 wait_for_kafka() {
   HOST=$(echo "$BOOTSTRAP_SERVER" | cut -d: -f1)
   PORT=$(echo "$BOOTSTRAP_SERVER" | cut -d: -f2)
-  echo "Waiting for Kafka on $HOST:$PORT..."
   while ! bash -c "echo > /dev/tcp/$HOST/$PORT" 2>/dev/null; do
-    echo "Kafka is unavailable, wait 5 seconds..."
+    echo "Waiting for Kafka..."
     sleep 5
   done
-  echo "Kafka is available!"
+  echo "Kafka is available"
 }
 
 wait_for_kafka
