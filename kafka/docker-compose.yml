@@ -18,6 +18,22 @@ x-kafka-env: &kafka-env
   KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 3
 
 services:
+  kafka-setup:
+    image: bitnami/kafka:latest
+    container_name: kafka-setup
+    entrypoint: [ "/bin/bash", "/init-topics.sh" ]
+    environment:
+      - BOOTSTRAP_SERVER=kafka1:9092
+    networks:
+      - kafka-network
+      - app-shared-network
+    volumes:
+      - ./init-topics.sh:/init-topics.sh
+    depends_on:
+      - kafka1
+      - kafka2
+      - kafka3
+
   zookeeper:
     image: bitnami/zookeeper:latest
     container_name: zookeeper
@@ -44,6 +60,7 @@ services:
       KAFKA_BROKER_ID: "1"
       KAFKA_LISTENERS: PLAINTEXT://:9092
       KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka1:9092
+      KAFKA_AUTO_CREATE_TOPICS_ENABLE: false
     expose:
       - "9092"
     volumes:
@@ -58,6 +75,7 @@ services:
       KAFKA_BROKER_ID: "2"
       KAFKA_LISTENERS: PLAINTEXT://:9093
       KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka2:9093
+      KAFKA_AUTO_CREATE_TOPICS_ENABLE: false
     expose:
       - "9093"
     volumes:
@@ -72,6 +90,7 @@ services:
       KAFKA_BROKER_ID: "3"
       KAFKA_LISTENERS: PLAINTEXT://:9094
       KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka3:9094
+      KAFKA_AUTO_CREATE_TOPICS_ENABLE: false
     expose:
       - "9094"
     volumes:

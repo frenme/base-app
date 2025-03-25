@@ -22,10 +22,7 @@ func main() {
 	db.InitConnections()
 	defer db.CloseConnections()
 
-	go func() {
-		createKafkaTopicIfNotExists("example-topic", 2, 2)
-	}()
-
+	gin.SetMode(gin.ReleaseMode)
 	router := gin.Default()
 	router.GET("/", pingHandler)
 	router.GET("/redis", redisHandler)
@@ -108,17 +105,16 @@ func redisHandler(c *gin.Context) {
 }
 
 // KAFKA --------------------------
+var brokers = strings.Split(os.Getenv("KAFKA_BROKERS"), ",")
+var writer = &kafka.Writer{
+	Addr:     kafka.TCP(brokers...),
+	Topic:    "example-topic",
+	Balancer: &kafka.RoundRobin{},
+}
+
 func kafkaProducer() {
-	brokers := strings.Split(os.Getenv("KAFKA_BROKERS"), ",")
-	writer := &kafka.Writer{
-		Addr:     kafka.TCP(brokers...),
-		Topic:    "example-topic",
-		Balancer: &kafka.LeastBytes{},
-	}
-	defer writer.Close()
 	err := writer.WriteMessages(context.Background(),
 		kafka.Message{
-			Key:   []byte("Key-1"),
 			Value: []byte("Some message from Kafka"),
 			Time:  time.Now(),
 		},
@@ -127,35 +123,4 @@ func kafkaProducer() {
 		log.Println("Kafka producer error: ", err)
 	}
 	log.Println("Kafka message has been sent")
-}
-
-func createKafkaTopicIfNotExists(topic string, numPartitions, replicationFactor int) {
-	brokers := strings.Split(os.Getenv("KAFKA_BROKERS"), ",")
-	conn, _ := kafka.Dial("tcp", brokers[0])
-	conn.SetDeadline(time.Now().Add(10 * time.Second))
-	defer conn.Close()
-
-	controller, _ := conn.Controller()
-	controllerAddr := fmt.Sprintf("%s:%d", controller.Host, controller.Port)
-	controllerConn, _ := kafka.Dial("tcp", controllerAddr)
-	defer controllerConn.Close()
-	controllerConn.SetDeadline(time.Now().Add(10 * time.Second))
-
-	topicConfigs := []kafka.TopicConfig{
-		{
-			Topic:             topic,
-			NumPartitions:     numPartitions,
-			ReplicationFactor: replicationFactor,
-		},
-	}
-
-	err := controllerConn.CreateTopics(topicConfigs...)
-	if err != nil {
-		if strings.Contains(err.Error(), "TopicExists") {
-			log.Printf("Topic %s already exists", topic)
-			return
-		}
-		log.Fatalf("Failed to create topic: %v", err)
-	}
-	log.Printf("Topic %s created successfully", topic)
 }

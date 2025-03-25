@@ -15,6 +15,7 @@ func main() {
 		kafkaConsumer()
 	}()
 
+	gin.SetMode(gin.ReleaseMode)
 	r := gin.Default()
 	r.GET("/", func(c *gin.Context) {
 		hostname, err := os.Hostname()
@@ -23,7 +24,7 @@ func main() {
 		}
 
 		c.JSON(http.StatusOK, gin.H{
-			"service":  "user-service",
+			"service":  "user-service1",
 			"hostname": hostname,
 		})
 	})
@@ -47,6 +48,6 @@ func kafkaConsumer() {
 			log.Println("Kafka consumer error: ", err)
 			continue
 		}
-		log.Printf("Kafka message got: key=%s, value=%s, offset=%d", string(msg.Key), string(msg.Value), msg.Offset)
+		log.Printf("Kafka message got: value=%s, offset=%d", string(msg.Value), msg.Offset)
 	}
 }
