@@ -12,7 +12,7 @@ x-kafka-service: &kafka-service
     - zookeeper
 
 x-kafka-env: &kafka-env
-  KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+  KAFKA_CFG_ZOOKEEPER_CONNECT: zookeeper:2181
   ALLOW_PLAINTEXT_LISTENER: yes
   KAFKA_DEFAULT_REPLICATION_FACTOR: 3
   KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 3
