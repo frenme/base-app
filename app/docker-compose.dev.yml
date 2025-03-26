@@ -17,6 +17,8 @@ services:
     build:
       context: .
       dockerfile: user-service/Dockerfile.dev
+      args:
+        GOLANG_VERSION: ${GOLANG_VERSION}
     networks:
       app-shared-network:
         aliases:
@@ -29,6 +31,8 @@ services:
     build:
       context: .
       dockerfile: order-service/Dockerfile.dev
+      args:
+        GOLANG_VERSION: ${GOLANG_VERSION}
     networks:
       app-shared-network:
         aliases:
@@ -41,6 +45,8 @@ services:
     build:
       context: .
       dockerfile: shared-service/Dockerfile.dev
+      args:
+        GOLANG_VERSION: ${GOLANG_VERSION}
     networks:
       app-shared-network:
         aliases:

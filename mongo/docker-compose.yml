@@ -1,5 +1,5 @@
 x-mongo-service: &mongo-service
-  image: mongo:latest
+  image: mongo:${MONGO_VERSION}
   command: ["mongod", "--config", "/etc/mongo/mongod.conf"]
   restart: always
   expose:
@@ -40,7 +40,7 @@ services:
       - ./mongodb-keyfile:/etc/mongo/mongodb-keyfile:ro
 
   mongo-setup:
-    image: mongo:latest
+    image: mongo:${MONGO_VERSION}
     container_name: mongo-setup
     environment:
       MONGO_USERNAME: ${MONGO_USERNAME}

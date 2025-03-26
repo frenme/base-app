@@ -1,5 +1,5 @@
 x-postgres-service: &postgres-service
-  image: postgres:17-alpine
+  image: postgres:${POSTGRES_VERSION}-alpine
   user: postgres
   restart: always
   command: [ "/bin/bash", "/usr/local/bin/init-replica.sh" ]
@@ -17,7 +17,7 @@ x-postgres-service: &postgres-service
 
 services:
   haproxy:
-    image: haproxy:latest
+    image: haproxy:${HAPROXY_VERSION}-alpine
     container_name: haproxy
     expose:
       - "5432"
@@ -35,7 +35,7 @@ services:
       - postgres-replica2
 
   postgres-master:
-    image: postgres:17-alpine
+    image: postgres:${POSTGRES_VERSION}-alpine
     user: postgres
     restart: always
     container_name: postgres-master

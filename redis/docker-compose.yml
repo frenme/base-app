@@ -1,5 +1,5 @@
 x-redis-service: &redis-service
-  image: redis:7.4.2-alpine
+  image: redis:${REDIS_VERSION}-alpine
   restart: always
   networks:
     - app-shared-network
@@ -10,7 +10,7 @@ x-redis-service: &redis-service
 
 services:
   redis-setup:
-    image: redis:7.4.2-alpine
+    image: redis:${REDIS_VERSION}-alpine
     container_name: redis-setup
     entrypoint: [ "/bin/sh", "/setup.sh" ]
     networks:

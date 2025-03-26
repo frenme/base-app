@@ -1,6 +1,6 @@
 services:
   kong:
-    image: kong:latest
+    image: kong:${KONG_VERSION}
     container_name: kong
     restart: always
     environment:
