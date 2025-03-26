@@ -14,5 +14,5 @@ mongosh --host mongo1:27017 -u ${MONGO_USERNAME} -p ${MONGO_PASSWORD} --authenti
     { _id: 2, host: 'mongo3:27017' }
   ]
 })"
-echo "Replica set initiated"
+echo "Mongo cluster created"
 sleep 5
