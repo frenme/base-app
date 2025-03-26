@@ -1,8 +1,6 @@
 Template golang app
 
 1) docker network create app-shared-network
-2) ./create-keyfile.sh
-3) mkcert in /kong/certs
-4) chmod +x run.sh
-5) chmod +x stop.sh
-6) ./run.sh
+2) mkcert in /kong/certs for https://localhost
+3) chmod +x run.sh stop.sh
+4) ./run.sh

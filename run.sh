@@ -1,6 +1,9 @@
 #!/bin/bash
 
 chmod +x kafka/setup.sh redis/setup.sh mongo/setup.sh mongo/create-keyfile.sh
+cd mongo || { echo "dir /mongo not found"; }
+./create-keyfile.sh
+cd ..
 
 dirs=("app" "kong" "kafka" "redis" "mongo" "postgres")
 
@@ -9,7 +12,9 @@ for dir in "${dirs[@]}"; do
   cd "$dir" || exit 1
 
   if [ "$dir" == "app" ]; then
-    docker compose up -d --scale user-service=2
+    docker compose up -d \
+    --scale user-service=2 \
+    --scale order-service=2
   elif [ "$dir" == "elk" ]; then
     docker compose up setup
     docker compose up -d
