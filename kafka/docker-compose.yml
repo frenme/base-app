@@ -1,5 +1,5 @@
 x-kafka-service: &kafka-service
-  image: bitnami/kafka:latest
+  image: bitnami/kafka:${KAFKA_VERSION}
   restart: always
   networks:
     - kafka-network
@@ -16,10 +16,11 @@ x-kafka-env: &kafka-env
   ALLOW_PLAINTEXT_LISTENER: yes
   KAFKA_DEFAULT_REPLICATION_FACTOR: 3
   KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 3
+  KAFKA_AUTO_CREATE_TOPICS_ENABLE: false
 
 services:
   kafka-setup:
-    image: bitnami/kafka:latest
+    image: bitnami/kafka:${KAFKA_VERSION}
     container_name: kafka-setup
     entrypoint: [ "/bin/bash", "/setup.sh" ]
     environment:
@@ -34,7 +35,7 @@ services:
       - kafka3
 
   zookeeper:
-    image: bitnami/zookeeper:latest
+    image: bitnami/zookeeper:${ZOOKEEPER_VERSION}
     container_name: zookeeper
     restart: always
     environment:
@@ -59,7 +60,6 @@ services:
       KAFKA_BROKER_ID: "1"
       KAFKA_LISTENERS: PLAINTEXT://:9092
       KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka1:9092
-      KAFKA_AUTO_CREATE_TOPICS_ENABLE: false
     expose:
       - "9092"
     volumes:
@@ -74,7 +74,6 @@ services:
       KAFKA_BROKER_ID: "2"
       KAFKA_LISTENERS: PLAINTEXT://:9093
       KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka2:9093
-      KAFKA_AUTO_CREATE_TOPICS_ENABLE: false
     expose:
       - "9093"
     volumes:
@@ -89,7 +88,6 @@ services:
       KAFKA_BROKER_ID: "3"
       KAFKA_LISTENERS: PLAINTEXT://:9094
       KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka3:9094
-      KAFKA_AUTO_CREATE_TOPICS_ENABLE: false
     expose:
       - "9094"
     volumes:
