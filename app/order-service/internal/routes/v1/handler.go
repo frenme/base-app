@@ -1,4 +1,4 @@
-package handlers
+package v1
 
 import (
 	"github.com/gin-gonic/gin"
@@ -22,7 +22,7 @@ func init() {
 }
 
 func OrderHandler(c *gin.Context) {
-	logger.Info("log main order handler")
+	logger.Info("log main order handler v1")
 	services.GetOrderData(c)
 }
 

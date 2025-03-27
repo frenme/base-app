@@ -12,6 +12,7 @@ x-micro-service: &micro-service
 services:
   user-service:
     <<: *micro-service
+    image: user-service:1.0.0
     build:
       context: .
       dockerfile: user-service/Dockerfile
@@ -26,6 +27,7 @@ services:
 
   order-service:
     <<: *micro-service
+    image: order-service:1.0.0
     build:
       context: .
       dockerfile: order-service/Dockerfile
@@ -40,6 +42,7 @@ services:
 
   shared-service:
     <<: *micro-service
+    image: shared-service:1.0.0
     build:
       context: .
       dockerfile: shared-service/Dockerfile

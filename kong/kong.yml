@@ -16,8 +16,7 @@ services:
       - name: order-routes
         strip_path: false
         paths:
-          - /
-          - /redis
+          - /api
 
   - name: shared-service
     url: http://shared-service-golang:8083
