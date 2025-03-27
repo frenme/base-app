@@ -15,6 +15,15 @@ func init() {
 	logger = slog.New(handler)
 }
 
+// OrderHandler
+// @Summary     Get order data - v2
+// @Description Some description for this route
+// @Tags        order
+// @Accept      json
+// @Produce     json
+// @Success     200  {object}  string "Info about order"
+// @Failure     400  {object}  string "Bad request"
+// @Router      /v2 [get]
 func OrderHandler(c *gin.Context) {
 	logger.Info("log main order handler v2")
 	services.GetOrderAnotherData(c)
