@@ -8,7 +8,8 @@ services:
       KONG_DECLARATIVE_CONFIG: /usr/local/kong/kong.yml
       KONG_ADMIN_LISTEN: 0.0.0.0:8001
     ports:
-      - "8443:8443"  # Default port
+      - "8000:8000"  # HTTP
+      - "8443:8443"  # HTTPS
       - "8001:8001"  # Admin API порт (HTTP)
     networks:
       - app-shared-network
