@@ -56,5 +56,5 @@ services:
       - "${SHARED_SERVICE_PORT}"
 
 networks:
-  app-shared-network:
+  app_shared_network:
     external: true
