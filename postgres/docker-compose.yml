@@ -4,7 +4,7 @@ x-postgres-service: &postgres-service
   restart: always
   command: [ "/bin/bash", "/usr/local/bin/init-replica.sh" ]
   networks:
-    - app-shared-network
+    - app_shared_network
   environment:
     PGUSER: ${REPLICA_USER}
     PGPASSWORD: ${REPLICA_PASSWORD}
@@ -23,7 +23,7 @@ services:
       - "5432"
       - "5433"
     networks:
-      - app-shared-network
+      - app_shared_network
     logging:
       options:
         max-size: "10m"
@@ -40,7 +40,7 @@ services:
     restart: always
     container_name: postgres-master
     networks:
-      - app-shared-network
+      - app_shared_network
     environment:
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_DB: ${POSTGRES_DB}
@@ -77,7 +77,7 @@ services:
       - ./init-replica.sh:/usr/local/bin/init-replica.sh:ro
 
 networks:
-  app-shared-network:
+  app_shared_network:
     external: true
 
 

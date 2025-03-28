@@ -2,7 +2,7 @@ x-redis-service: &redis-service
   image: redis:${REDIS_VERSION}-alpine
   restart: always
   networks:
-    - app-shared-network
+    - app_shared_network
   logging:
     options:
       max-size: "10m"
@@ -14,7 +14,7 @@ services:
     container_name: redis-setup
     entrypoint: [ "/bin/sh", "/setup.sh" ]
     networks:
-      - app-shared-network
+      - app_shared_network
     volumes:
       - ./setup.sh:/setup.sh
     depends_on:
@@ -74,5 +74,5 @@ services:
       redis-server --port 7705 --cluster-enabled yes --cluster-config-file /data/nodes.conf --cluster-node-timeout 5000
 
 networks:
-  app-shared-network:
+  app_shared_network:
     external: true

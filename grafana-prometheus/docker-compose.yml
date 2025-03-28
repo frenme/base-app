@@ -9,7 +9,7 @@ services:
       - "3000:3000"
     networks:
       - monitoring
-      - app-shared-network
+      - app_shared_network
     logging:
       options:
         max-size: "10m"
@@ -26,7 +26,7 @@ services:
       - '--config.file=/etc/prometheus/prometheus.yml'
     networks:
       - monitoring
-      - app-shared-network
+      - app_shared_network
     logging:
       options:
         max-size: "10m"
@@ -45,7 +45,7 @@ services:
       - /:/host:ro
     networks:
       - monitoring
-      - app-shared-network
+      - app_shared_network
     logging:
       options:
         max-size: "10m"
@@ -54,5 +54,5 @@ services:
 networks:
   monitoring:
     driver: bridge
-  app-shared-network:
+  app_shared_network:
     external: true

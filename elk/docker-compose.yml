@@ -19,7 +19,7 @@ services:
       BEATS_SYSTEM_PASSWORD: ${BEATS_SYSTEM_PASSWORD:-}
     networks:
       - elk
-      - app-shared-network
+      - app_shared_network
     volumes:
       - ./setup/entrypoint.sh:/entrypoint.sh:ro,Z
       - ./setup/lib.sh:/lib.sh:ro,Z
@@ -44,7 +44,7 @@ services:
       discovery.type: single-node
     networks:
       - elk
-      - app-shared-network
+      - app_shared_network
     logging:
       options:
         max-size: "10m"
@@ -70,7 +70,7 @@ services:
       LOGSTASH_INTERNAL_PASSWORD: ${LOGSTASH_INTERNAL_PASSWORD:-}
     networks:
       - elk
-      - app-shared-network
+      - app_shared_network
     logging:
       options:
         max-size: "10m"
@@ -94,7 +94,7 @@ services:
       KIBANA_SYSTEM_PASSWORD: ${KIBANA_SYSTEM_PASSWORD:-}
     networks:
       - elk
-      - app-shared-network
+      - app_shared_network
     logging:
       options:
         max-size: "10m"
@@ -119,7 +119,7 @@ services:
       BEATS_SYSTEM_PASSWORD: ${BEATS_SYSTEM_PASSWORD:-}
     networks:
       - elk
-      - app-shared-network
+      - app_shared_network
     logging:
       options:
         max-size: "10m"
@@ -140,7 +140,7 @@ services:
 networks:
   elk:
     driver: bridge
-  app-shared-network:
+  app_shared_network:
     external: true
 
 volumes:
