@@ -1,0 +1,91 @@
+default:
+  image: alpine:latest
+  before_script:
+    - apk add --no-cache git openssh-client docker-compose
+    - mkdir -p ~/.ssh
+    - echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_rsa
+    - chmod 600 ~/.ssh/id_rsa
+    - ssh-keyscan -H "$DEPLOY_SERVER" >> ~/.ssh/known_hosts
+
+stages:
+  - deploy
+
+deploy_app:
+  stage: deploy
+  script:
+    - ssh "$DEPLOY_USER@$DEPLOY_SERVER" <<'EOF'
+      cd ${PROJECT_PATH}
+      git pull origin main
+      cd app
+      docker-compose -f docker-compose.dev.yml down
+      docker-compose -f docker-compose.dev.yml up -d
+      EOF
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "main"'
+      changes:
+        - app/**/*
+
+deploy_kafka:
+  stage: deploy
+  script:
+    - ssh "$DEPLOY_USER@$DEPLOY_SERVER" <<'EOF'
+      cd ${PROJECT_PATH}/kafka
+      docker-compose down
+      docker-compose up -d
+      EOF
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "main"'
+      changes:
+        - kafka/**/*
+
+deploy_redis:
+  stage: deploy
+  script:
+    - ssh "$DEPLOY_USER@$DEPLOY_SERVER" <<'EOF'
+      cd ${PROJECT_PATH}/redis
+      docker-compose down
+      docker-compose up -d
+      EOF
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "main"'
+      changes:
+        - redis/**/*
+
+deploy_postgres:
+  stage: deploy
+  script:
+    - ssh "$DEPLOY_USER@$DEPLOY_SERVER" <<'EOF'
+      cd ${PROJECT_PATH}/postgres
+      docker-compose down
+      docker-compose up -d
+      EOF
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "main"'
+      changes:
+        - postgres/**/*
+
+deploy_mongo:
+  stage: deploy
+  script:
+    - ssh "$DEPLOY_USER@$DEPLOY_SERVER" <<'EOF'
+      cd ${PROJECT_PATH}/mongo
+      docker-compose down
+      docker-compose up -d
+      EOF
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "main"'
+      changes:
+        - mongo/**/*
+
+deploy_kong:
+  stage: deploy
+  script:
+    - ssh "$DEPLOY_USER@$DEPLOY_SERVER" <<'EOF'
+      cd ${PROJECT_PATH}/kong
+      docker-compose down
+      docker-compose up -d
+      EOF
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "main"'
+      changes:
+        - kong/**/*
