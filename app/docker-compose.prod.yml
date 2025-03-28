@@ -19,7 +19,7 @@ services:
       args:
         GOLANG_VERSION: ${GOLANG_VERSION}
     networks:
-      app-shared-network:
+      app_shared_network:
         aliases:
           - user-service-golang
     expose:
@@ -34,7 +34,7 @@ services:
       args:
         GOLANG_VERSION: ${GOLANG_VERSION}
     networks:
-      app-shared-network:
+      app_shared_network:
         aliases:
           - order-service-golang
     expose:
@@ -49,7 +49,7 @@ services:
       args:
         GOLANG_VERSION: ${GOLANG_VERSION}
     networks:
-      app-shared-network:
+      app_shared_network:
         aliases:
           - shared-service-golang
     expose:
