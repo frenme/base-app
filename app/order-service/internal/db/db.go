@@ -15,21 +15,7 @@ var PostgresReplicas *pgxpool.Pool
 var MongoClient *mongo.Client
 
 func InitConnections() {
-	maxAttempts := 50
-	attempt := 0
-	for attempt < maxAttempts {
-		if PostgresMaster == nil || PostgresReplicas == nil || MongoClient == nil {
-			log.Printf("Попытка подключения к БД %d из %d\n", attempt+1, maxAttempts)
-			time.Sleep(10 * time.Second)
-			attempt++
-			continue
-		}
-		break
-	}
-
-	if PostgresMaster == nil || PostgresReplicas == nil || MongoClient == nil {
-		log.Fatal("Не удалось установить подключение к базам данных после нескольких попыток")
-	}
+	time.Sleep(120 * time.Second)
 	PostgresMaster = db.CreatePostgresPool(os.Getenv("POSTGRES_MASTER_CONNECTION"))
 	PostgresReplicas = db.CreatePostgresPool(os.Getenv("POSTGRES_REPLICAS_CONNECTION"))
 	MongoClient = db.CreateMongoClient(os.Getenv("MONGO_CONNECTION"))
