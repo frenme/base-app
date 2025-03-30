@@ -4,9 +4,9 @@
 dirs=("app" "kong" "kafka" "redis" "mongo" "postgres")
 
 # make files runnable
-chmod +x kafka/setup.sh redis/setup.sh mongo/setup.sh mongo/create-keyfile.sh
+chmod +x kafka/setup.sh redis/setup.sh mongo/setup.sh mongo/generate-keyfile.sh
 cd mongo || { exit 1; }
-./create-keyfile.sh
+./generate-keyfile.sh
 cd ..
 
 # launching

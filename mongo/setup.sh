@@ -1,12 +1,19 @@
 #!/bin/bash
 
-until mongosh --host mongo1:27017 -u ${MONGO_USERNAME} -p ${MONGO_PASSWORD} --authenticationDatabase admin --eval "db.runCommand({ ping: 1 })" > /dev/null 2>&1; do
+mkdir -p /etc/mongo
+cp /tmp/keyfile /etc/mongo/keyfile
+chown mongodb:mongodb /etc/mongo/keyfile
+chmod 400 /etc/mongo/keyfile
+
+(
+
+until mongosh --host localhost:27017 --eval "db.adminCommand('ping')" > /dev/null 2>&1; do
   echo "Waiting for Mongo..."
-  sleep 5
+  sleep 2
 done
 
-echo "Mongo is available"
-mongosh --host mongo1:27017 -u ${MONGO_USERNAME} -p ${MONGO_PASSWORD} --authenticationDatabase admin --eval "rs.initiate({
+mongosh --host localhost:27017 --eval "
+rs.initiate({
   _id: 'rs0',
   members: [
     { _id: 0, host: 'mongo1:27017' },
@@ -14,5 +21,19 @@ mongosh --host mongo1:27017 -u ${MONGO_USERNAME} -p ${MONGO_PASSWORD} --authenti
     { _id: 2, host: 'mongo3:27017' }
   ]
 })"
+
+sleep 15
+
+mongosh --host localhost:27017 --eval "
+  db.getSiblingDB('admin').createUser({
+    user: 'root',
+    pwd: 'example',
+    roles: [{ role: 'root', db: 'admin' }]
+  })
+"
+
 echo "Mongo cluster created"
-sleep 5
+
+) &
+
+mongod --replSet rs0 --keyFile /etc/mongo/keyfile --port 27017 --bind_ip_all
