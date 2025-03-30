@@ -17,8 +17,8 @@ deploy_app:
       cd ${PROJECT_PATH}
       git pull origin main
       cd app
-      docker-compose -f docker-compose.dev.yml down
-      docker-compose -f docker-compose.dev.yml up -d
+      docker compose -f docker compose.dev.yml down
+      docker compose -f docker compose.dev.yml up -d
       EOF
   rules:
     - if: '$CI_COMMIT_BRANCH == "main"'
@@ -30,8 +30,8 @@ deploy_kafka:
   script:
     - ssh "$DEPLOY_USER@$DEPLOY_SERVER" <<'EOF'
       cd ${PROJECT_PATH}/kafka
-      docker-compose down
-      docker-compose up -d
+      docker compose down
+      docker compose up -d
       EOF
   rules:
     - if: '$CI_COMMIT_BRANCH == "main"'
@@ -43,8 +43,8 @@ deploy_redis:
   script:
     - ssh "$DEPLOY_USER@$DEPLOY_SERVER" <<'EOF'
       cd ${PROJECT_PATH}/redis
-      docker-compose down
-      docker-compose up -d
+      docker compose down
+      docker compose up -d
       EOF
   rules:
     - if: '$CI_COMMIT_BRANCH == "main"'
@@ -56,8 +56,8 @@ deploy_postgres:
   script:
     - ssh "$DEPLOY_USER@$DEPLOY_SERVER" <<'EOF'
       cd ${PROJECT_PATH}/postgres
-      docker-compose down
-      docker-compose up -d
+      docker compose down
+      docker compose up -d
       EOF
   rules:
     - if: '$CI_COMMIT_BRANCH == "main"'
@@ -69,8 +69,8 @@ deploy_mongo:
   script:
     - ssh "$DEPLOY_USER@$DEPLOY_SERVER" <<'EOF'
       cd ${PROJECT_PATH}/mongo
-      docker-compose down
-      docker-compose up -d
+      docker compose down
+      docker compose up -d
       EOF
   rules:
     - if: '$CI_COMMIT_BRANCH == "main"'
@@ -82,8 +82,8 @@ deploy_kong:
   script:
     - ssh "$DEPLOY_USER@$DEPLOY_SERVER" <<'EOF'
       cd ${PROJECT_PATH}/kong
-      docker-compose down
-      docker-compose up -d
+      docker compose down
+      docker compose up -d
       EOF
   rules:
     - if: '$CI_COMMIT_BRANCH == "main"'

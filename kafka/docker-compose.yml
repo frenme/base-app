@@ -2,7 +2,6 @@ x-kafka-service: &kafka-service
   image: bitnami/kafka:${KAFKA_VERSION}
   restart: always
   networks:
-    - kafka_network
     - app_shared_network
   logging:
     options:
@@ -26,7 +25,7 @@ services:
     environment:
       - BOOTSTRAP_SERVER=kafka1:9092
     networks:
-      - kafka_network
+      - app_shared_network
     volumes:
       - ./setup.sh:/setup.sh
     depends_on:
@@ -43,7 +42,7 @@ services:
     expose:
       - "2181"
     networks:
-      - kafka_network
+      - app_shared_network
     logging:
       options:
         max-size: "10m"
@@ -95,8 +94,6 @@ services:
       - kafka3_data:/bitnami/kafka
 
 networks:
-  kafka_network:
-    driver: bridge
   app_shared_network:
     external: true
 

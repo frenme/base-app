@@ -1,0 +1,70 @@
+basePath: /api
+info:
+  contact: {}
+  description: Golang project
+  title: Base API
+  version: "1.0"
+paths:
+  /v1:
+    get:
+      consumes:
+      - application/json
+      description: Some description for this route
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Info about order
+          schema:
+            type: string
+        "400":
+          description: Bad request
+          schema:
+            type: string
+      summary: Get order data
+      tags:
+      - order
+  /v1/redis:
+    get:
+      consumes:
+      - application/json
+      description: Some description for this route
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Info about order
+          schema:
+            type: string
+        "400":
+          description: Bad request
+          schema:
+            type: string
+      summary: Cache with Redis
+      tags:
+      - caching
+  /v2:
+    get:
+      consumes:
+      - application/json
+      description: Some description for this route
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Info about order
+          schema:
+            type: string
+        "400":
+          description: Bad request
+          schema:
+            type: string
+      summary: Get order data - v2
+      tags:
+      - order
+securityDefinitions:
+  CustomToken:
+    in: header
+    name: X-Custom-Token
+    type: apiKey
+swagger: "2.0"
