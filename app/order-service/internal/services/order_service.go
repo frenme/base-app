@@ -36,7 +36,7 @@ func GetOrderData(c *gin.Context) {
 	}()
 
 	c.JSON(http.StatusOK, gin.H{
-		"message":                     "e123xample of v1 route",
+		"message":                     "example of v1 route",
 		"object from another package": user,
 		"postgresql data":             postgresData,
 		"mongodb data":                mongoData,

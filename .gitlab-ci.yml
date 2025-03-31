@@ -10,14 +10,6 @@ default:
     - chmod 600 ~/.ssh/id_rsa
     - ssh-keyscan -H "$DEPLOY_SERVER" >> ~/.ssh/known_hosts
 
-variables:
-  DOCKER_TLS_CERTDIR: "/certs"
-  DOCKER_BUILDKIT: 1
-
-cache:
-  paths:
-    - /var/lib/docker
-
 .default_deploy:
   stage: deploy
   script:
