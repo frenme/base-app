@@ -25,6 +25,6 @@ func init() {
 // @Failure     400  {object}  string "Bad request"
 // @Router      /v2 [get]
 func OrderHandler(c *gin.Context) {
-	logger.Info(" 12log main order handler v2")
+	logger.Info(" 1log main order handler v2")
 	services.GetOrderAnotherData(c)
 }
