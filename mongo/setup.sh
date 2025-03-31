@@ -34,7 +34,7 @@ mongosh --host localhost:27017 --eval "
 
 sleep 10
 
-mongosh --host localhost:27017 --eval "
+mongosh --host localhost:27017 -u admin -p password --authenticationDatabase admin --eval "
   db.adminCommand({ setParameter: 1, logLevel: 1 });
 "
 
