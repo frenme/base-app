@@ -22,7 +22,7 @@ rs.initiate({
   ]
 })"
 
-sleep 15
+sleep 20
 
 mongosh --host localhost:27017 --eval "
   db.getSiblingDB('admin').createUser({
@@ -30,6 +30,12 @@ mongosh --host localhost:27017 --eval "
     pwd: 'example',
     roles: [{ role: 'root', db: 'admin' }]
   })
+"
+
+sleep 10
+
+mongosh --host localhost:27017 --eval "
+  db.adminCommand({ setParameter: 1, logLevel: 1 });
 "
 
 echo "Mongo cluster created"
