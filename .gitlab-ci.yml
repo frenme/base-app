@@ -1,3 +1,6 @@
+stages:
+  - deploy
+
 default:
   image: alpine:latest
   before_script:
@@ -7,95 +10,55 @@ default:
     - chmod 600 ~/.ssh/id_rsa
     - ssh-keyscan -H "$DEPLOY_SERVER" >> ~/.ssh/known_hosts
 
-stages:
-  - deploy
+variables:
+  DOCKER_TLS_CERTDIR: "/certs"
+  DOCKER_BUILDKIT: 1
+
+cache:
+  paths:
+    - /var/lib/docker
+
+.default_deploy:
+  stage: deploy
+  script:
+    - |
+      ssh "$DEPLOY_USER@$DEPLOY_SERVER" <<EOF
+      cd ${PROJECT_PATH}/${SERVICE_PATH}
+      git pull origin main
+      docker compose down
+      docker compose up -d
+      EOF
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "main"'
+      changes:
+        - ${SERVICE_PATH}/**/*
 
 deploy_app:
-  stage: deploy
-  script:
-    - |
-      ssh "$DEPLOY_USER@$DEPLOY_SERVER" <<EOF
-      cd ${PROJECT_PATH}/app
-      git pull origin main
-      docker compose down
-      docker compose up -d
-      EOF
-  rules:
-    - if: '$CI_COMMIT_BRANCH == "main"'
-      changes:
-        - app/**/*
+  extends: .default_deploy
+  variables:
+    SERVICE_PATH: app
 
 deploy_kafka:
-  stage: deploy
-  script:
-    - |
-      ssh "$DEPLOY_USER@$DEPLOY_SERVER" <<EOF
-      cd ${PROJECT_PATH}/kafka
-      git pull origin main
-      docker compose down
-      docker compose up -d
-      EOF
-  rules:
-    - if: '$CI_COMMIT_BRANCH == "main"'
-      changes:
-        - kafka/**/*
+  extends: .default_deploy
+  variables:
+    SERVICE_PATH: kafka
 
 deploy_redis:
-  stage: deploy
-  script:
-    - |
-      ssh "$DEPLOY_USER@$DEPLOY_SERVER" <<EOF
-      cd ${PROJECT_PATH}/redis
-      git pull origin main
-      docker compose down
-      docker compose up -d
-      EOF
-  rules:
-    - if: '$CI_COMMIT_BRANCH == "main"'
-      changes:
-        - redis/**/*
+  extends: .default_deploy
+  variables:
+    SERVICE_PATH: redis
 
 deploy_postgres:
-  stage: deploy
-  script:
-    - |
-      ssh "$DEPLOY_USER@$DEPLOY_SERVER" <<EOF
-      cd ${PROJECT_PATH}/postgres
-      git pull origin main
-      docker compose down
-      docker compose up -d
-      EOF
-  rules:
-    - if: '$CI_COMMIT_BRANCH == "main"'
-      changes:
-        - postgres/**/*
+  extends: .default_deploy
+  variables:
+    SERVICE_PATH: postgres
 
 deploy_mongo:
-  stage: deploy
-  script:
-    - |
-      ssh "$DEPLOY_USER@$DEPLOY_SERVER" <<EOF
-      cd ${PROJECT_PATH}/mongo
-      git pull origin main
-      docker compose down
-      docker compose up -d
-      EOF
-  rules:
-    - if: '$CI_COMMIT_BRANCH == "main"'
-      changes:
-        - mongo/**/*
+  extends: .default_deploy
+  variables:
+    SERVICE_PATH: mongo
 
 deploy_kong:
-  stage: deploy
-  script:
-    - |
-      ssh "$DEPLOY_USER@$DEPLOY_SERVER" <<EOF
-      cd ${PROJECT_PATH}/kong
-      git pull origin main
-      docker compose down
-      docker compose up -d
-      EOF
-  rules:
-    - if: '$CI_COMMIT_BRANCH == "main"'
-      changes:
-        - kong/**/*
+  extends: .default_deploy
+  variables:
+    SERVICE_PATH: kong
