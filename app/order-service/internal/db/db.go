@@ -25,7 +25,7 @@ func init() {
 func InitConnections() {
 	maxAttempts := 100
 	for attempt := 1; attempt <= maxAttempts; attempt++ {
-		logger.Info("Attempt %d to initialize connections: ", attempt)
+		logger.Info("Attempt to initialize connections: ", attempt)
 
 		if PostgresMaster == nil || PostgresReplicas == nil {
 			PostgresMaster = db.CreatePostgresPool(os.Getenv("POSTGRES_MASTER_CONNECTION"))
