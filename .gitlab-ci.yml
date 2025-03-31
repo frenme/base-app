@@ -17,8 +17,8 @@ deploy_app:
       ssh "$DEPLOY_USER@$DEPLOY_SERVER" <<EOF
       cd ${PROJECT_PATH}/app
       git pull origin main
-      docker compose -f docker-compose.dev.yml down
-      docker compose -f docker-compose.dev.yml up -d
+      docker compose down
+      docker compose up -d
       EOF
   rules:
     - if: '$CI_COMMIT_BRANCH == "main"'
@@ -28,8 +28,10 @@ deploy_app:
 deploy_kafka:
   stage: deploy
   script:
-    - ssh "$DEPLOY_USER@$DEPLOY_SERVER" <<'EOF'
+    - |
+      ssh "$DEPLOY_USER@$DEPLOY_SERVER" <<EOF
       cd ${PROJECT_PATH}/kafka
+      git pull origin main
       docker compose down
       docker compose up -d
       EOF
@@ -41,8 +43,10 @@ deploy_kafka:
 deploy_redis:
   stage: deploy
   script:
-    - ssh "$DEPLOY_USER@$DEPLOY_SERVER" <<'EOF'
+    - |
+      ssh "$DEPLOY_USER@$DEPLOY_SERVER" <<EOF
       cd ${PROJECT_PATH}/redis
+      git pull origin main
       docker compose down
       docker compose up -d
       EOF
@@ -54,8 +58,10 @@ deploy_redis:
 deploy_postgres:
   stage: deploy
   script:
-    - ssh "$DEPLOY_USER@$DEPLOY_SERVER" <<'EOF'
+    - |
+      ssh "$DEPLOY_USER@$DEPLOY_SERVER" <<EOF
       cd ${PROJECT_PATH}/postgres
+      git pull origin main
       docker compose down
       docker compose up -d
       EOF
@@ -67,8 +73,10 @@ deploy_postgres:
 deploy_mongo:
   stage: deploy
   script:
-    - ssh "$DEPLOY_USER@$DEPLOY_SERVER" <<'EOF'
+    - |
+      ssh "$DEPLOY_USER@$DEPLOY_SERVER" <<EOF
       cd ${PROJECT_PATH}/mongo
+      git pull origin main
       docker compose down
       docker compose up -d
       EOF
@@ -80,8 +88,10 @@ deploy_mongo:
 deploy_kong:
   stage: deploy
   script:
-    - ssh "$DEPLOY_USER@$DEPLOY_SERVER" <<'EOF'
+    - |
+      ssh "$DEPLOY_USER@$DEPLOY_SERVER" <<EOF
       cd ${PROJECT_PATH}/kong
+      git pull origin main
       docker compose down
       docker compose up -d
       EOF
