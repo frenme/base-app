@@ -17,8 +17,8 @@ deploy_app:
       ssh "$DEPLOY_USER@$DEPLOY_SERVER" <<EOF
       cd ${PROJECT_PATH}/app
       git pull origin main
-      docker-compose -f docker-compose.dev.yml down
-      docker-compose -f docker-compose.dev.yml up -d
+      docker compose -f docker-compose.dev.yml down
+      docker compose -f docker-compose.dev.yml up -d
       EOF
   rules:
     - if: '$CI_COMMIT_BRANCH == "main"'
