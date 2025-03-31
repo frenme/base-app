@@ -22,7 +22,10 @@ rs.initiate({
   ]
 })"
 
-sleep 20
+until mongosh --host localhost:27017 --eval "rs.isMaster().ismaster" | grep -q "true"; do
+  echo "Waiting for mongo1 to become primary..."
+  sleep 2
+done
 
 mongosh --host localhost:27017 --eval "
   db.getSiblingDB('admin').createUser({
@@ -32,14 +35,8 @@ mongosh --host localhost:27017 --eval "
   })
 "
 
-sleep 10
-
-mongosh --host localhost:27017 -u admin -p password --authenticationDatabase admin --eval "
-  db.adminCommand({ setParameter: 1, logLevel: 1 });
-"
-
 echo "Mongo cluster created"
 
 ) &
 
-mongod --replSet rs0 --keyFile /etc/mongo/keyfile --port 27017 --bind_ip_all
+mongod --config /etc/mongo/mongod.conf
