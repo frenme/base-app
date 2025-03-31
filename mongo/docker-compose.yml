@@ -21,6 +21,9 @@ services:
   mongo1:
     <<: *mongo-service
     container_name: mongo1
+    environment:
+      MONGO_USERNAME: ${MONGO_USERNAME}
+      MONGO_PASSWORD: ${MONGO_PASSWORD}
     volumes:
       - mongo1_data:/data/db
       - ./keyfile:/tmp/keyfile:ro

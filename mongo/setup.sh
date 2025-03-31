@@ -29,8 +29,8 @@ done
 
 mongosh --host localhost:27017 --eval "
   db.getSiblingDB('admin').createUser({
-    user: 'root',
-    pwd: 'example',
+    user: '${MONGO_USERNAME}',
+    pwd: '${MONGO_PASSWORD}',
     roles: [{ role: 'root', db: 'admin' }]
   })
 "
