@@ -1,6 +1,6 @@
 #!/bin/bash
 
-dirs=("app" "kong" "kafka" "redis" "postgres" "mongo" "elk" "grafana-prometheus")
+dirs=("app" "kong" "kafka" "redis" "postgres" "mongo" "elk" "prometheus")
 
 for dir in "${dirs[@]}"; do
   echo "Stopping service: $dir..."

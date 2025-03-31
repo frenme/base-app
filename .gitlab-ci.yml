@@ -26,9 +26,19 @@ default:
         - ${SERVICE_PATH}/**/*
 
 deploy_app:
-  extends: .default_deploy
-  variables:
-    SERVICE_PATH: app
+  stage: deploy
+  script:
+    - |
+      ssh "$DEPLOY_USER@$DEPLOY_SERVER" <<EOF
+      cd ${PROJECT_PATH}/app
+      git pull origin main
+      docker compose down
+      docker compose up -d --scale user-service=2 --scale order-service=1
+      EOF
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "main"'
+      changes:
+        - app/**/*
 
 deploy_kafka:
   extends: .default_deploy

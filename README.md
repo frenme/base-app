@@ -1,4 +1,4 @@
-Template golang app
+Template app
 
 1) docker network create app_shared_network
 2) mkcert in /kong/certs for https://localhost
