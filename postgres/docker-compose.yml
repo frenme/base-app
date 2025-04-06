@@ -1,7 +1,7 @@
 x-postgres-service: &postgres-service
   image: postgres:${POSTGRES_VERSION}-alpine
   user: postgres
-  restart: always
+  restart: unless-stopped
   command: [ "/bin/bash", "/usr/local/bin/init-replica.sh" ]
   networks:
     - app_shared_network
@@ -14,6 +14,11 @@ x-postgres-service: &postgres-service
       max-file: "3"
   depends_on:
     - postgres-master
+  healthcheck:
+    test: [ "CMD-SHELL", "pg_isready -U ${REPLICA_USER} -d ${POSTGRES_DB}" ]
+    interval: 30s
+    timeout: 10s
+    retries: 3
 
 services:
   haproxy:
@@ -33,12 +38,17 @@ services:
     depends_on:
       - postgres-replica1
       - postgres-replica2
+    healthcheck:
+      test: [ "CMD-SHELL", "echo 'show stat' | nc -w 2 localhost 5432" ]
+      interval: 30s
+      timeout: 10s
+      retries: 3
 
   postgres-master:
     image: postgres:${POSTGRES_VERSION}-alpine
-    user: postgres
-    restart: always
     container_name: postgres-master
+    user: postgres
+    restart: unless-stopped
     networks:
       - app_shared_network
     environment:
@@ -61,6 +71,11 @@ services:
     volumes:
       - postgres_master_data:/var/lib/postgresql/data
       - ./00_init.sql:/docker-entrypoint-initdb.d/00_init.sql
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}" ]
+      interval: 30s
+      timeout: 10s
+      retries: 3
 
   postgres-replica1:
     <<: *postgres-service

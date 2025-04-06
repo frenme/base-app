@@ -2,7 +2,7 @@ services:
   kong:
     image: kong:${KONG_VERSION}
     container_name: kong
-    restart: always
+    restart: unless-stopped
     environment:
       KONG_DATABASE: "off"
       KONG_DECLARATIVE_CONFIG: /usr/local/kong/kong.yml

@@ -1,7 +1,7 @@
 name: golang-prod
 
 x-micro-service: &micro-service
-  restart: always
+  restart: unless-stopped
   env_file:
     - .env
   logging:

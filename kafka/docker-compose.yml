@@ -1,6 +1,6 @@
 x-kafka-service: &kafka-service
   image: bitnami/kafka:${KAFKA_VERSION}
-  restart: always
+  restart: unless-stopped
   networks:
     - app_shared_network
   logging:
@@ -36,7 +36,7 @@ services:
   zookeeper:
     image: bitnami/zookeeper:${ZOOKEEPER_VERSION}
     container_name: zookeeper
-    restart: always
+    restart: unless-stopped
     environment:
       - ALLOW_ANONYMOUS_LOGIN=yes
     expose:
@@ -50,6 +50,11 @@ services:
     volumes:
       - ./logback.xml:/opt/bitnami/zookeeper/conf/logback.xml
       - zookeeper_data:/bitnami/zookeeper
+    healthcheck:
+      test: [ "CMD", "bash", "-c", "echo ruok | nc -w 2 localhost 2181 | grep imok" ]
+      interval: 10s
+      timeout: 5s
+      retries: 3
 
   kafka1:
     <<: *kafka-service
@@ -64,6 +69,11 @@ services:
     volumes:
       - ./log4j.properties:/opt/bitnami/kafka/config/log4j.properties
       - kafka1_data:/bitnami/kafka
+    healthcheck:
+      test: [ "CMD", "bash", "-c", "/opt/bitnami/kafka/bin/kafka-topics.sh --bootstrap-server localhost:9092 --list > /dev/null" ]
+      interval: 15s
+      timeout: 10s
+      retries: 5
 
   kafka2:
     <<: *kafka-service
@@ -78,6 +88,11 @@ services:
     volumes:
       - ./log4j.properties:/opt/bitnami/kafka/config/log4j.properties
       - kafka2_data:/bitnami/kafka
+    healthcheck:
+      test: [ "CMD", "bash", "-c", "/opt/bitnami/kafka/bin/kafka-topics.sh --bootstrap-server localhost:9093 --list > /dev/null" ]
+      interval: 15s
+      timeout: 10s
+      retries: 5
 
   kafka3:
     <<: *kafka-service
@@ -92,6 +107,11 @@ services:
     volumes:
       - ./log4j.properties:/opt/bitnami/kafka/config/log4j.properties
       - kafka3_data:/bitnami/kafka
+    healthcheck:
+      test: [ "CMD", "bash", "-c", "/opt/bitnami/kafka/bin/kafka-topics.sh --bootstrap-server localhost:9094 --list > /dev/null" ]
+      interval: 15s
+      timeout: 10s
+      retries: 5
 
 networks:
   app_shared_network:
