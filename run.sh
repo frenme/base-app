@@ -15,10 +15,10 @@ for dir in "${dirs[@]}"; do
   cd "$dir" || exit 1
 
   if [ "$dir" == "app" ]; then
-    # configure scale parameter
+    # configure scale parameter (example)
     docker compose up -d \
     --scale user-service=2 \
-    --scale order-service=1
+    --scale agency-service=1
   elif [ "$dir" == "elk" ]; then
     docker compose up setup
     docker compose up -d

@@ -1,26 +1,34 @@
 package db
 
 import (
-	"context"
-	"github.com/jackc/pgx/v4/pgxpool"
-	"log"
 	"time"
+
+	"gorm.io/driver/postgres"
+	"gorm.io/gorm"
+	"gorm.io/plugin/dbresolver"
 )
 
-func CreatePostgresPool(connectionString string) *pgxpool.Pool {
-	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
-	defer cancel()
-
-	config, err := pgxpool.ParseConfig(connectionString)
-	config.MaxConnLifetime = 30 * time.Minute
-	config.MaxConnIdleTime = 5 * time.Minute
-	config.HealthCheckPeriod = 1 * time.Minute
-	config.MaxConns = 20
-	pool, err := pgxpool.ConnectConfig(ctx, config)
-
+func CreatePostgresClient(masterDSN string, replicaDSN string) *gorm.DB {
+	db, err := gorm.Open(postgres.Open(masterDSN), &gorm.Config{})
 	if err != nil {
-		log.Println("Pool of connections to PostgreSQL is failed: ", err)
+		return nil
 	}
 
-	return pool
+	sqlDB, _ := db.DB()
+	sqlDB.SetMaxIdleConns(10)
+	sqlDB.SetMaxOpenConns(100)
+	sqlDB.SetConnMaxLifetime(time.Hour)
+	if err := sqlDB.Ping(); err != nil {
+		return nil
+	}
+
+	if err := db.Use(dbresolver.Register(dbresolver.Config{
+		Sources:  []gorm.Dialector{postgres.Open(masterDSN)},
+		Replicas: []gorm.Dialector{postgres.Open(replicaDSN)},
+		Policy:   dbresolver.RandomPolicy{},
+	})); err != nil {
+		return nil
+	}
+
+	return db
 }

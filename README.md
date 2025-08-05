@@ -8,11 +8,11 @@ Template app
 6) ./run.sh
 
 
-ЧТО ЕЩЕ МОЖНО СДЕЛАТЬ
-- дев и прод разделение 
-  - поднять две разные БД в тех же инстансах БД
-  - попробовать унифицировать мастер и реплики в единую сущность чтоб haproxy сам понимал куда направить запрос
-  - поработать над субдоменами в Kong
-  - подумать в какие топики писать на дев стенде, иначе может быть пересечение
-- поднимать сервисы автоматически при ошибках
-- тестирование
+What else can be done:
+- Dev and Prod Separation
+-- Deploy two separate databases (Dev and Prod) on the same DB instances
+-- Try to unify master and replicas into a single entity so that HAProxy can route requests automatically
+-- Work on subdomain configuration in Kong
+-- Consider which topics to publish to on the dev environment to avoid collisions
+- Automatically restart services on failure
+- Testing

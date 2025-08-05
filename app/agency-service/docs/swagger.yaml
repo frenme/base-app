@@ -1,0 +1,374 @@
+basePath: /api/agency-service
+definitions:
+  dto.AgenciesResponseDTO:
+    properties:
+      items:
+        items:
+          $ref: '#/definitions/dto.AgencyDTO'
+        type: array
+      skip:
+        type: integer
+      take:
+        type: integer
+      total:
+        type: integer
+    type: object
+  dto.AgencyDTO:
+    properties:
+      id:
+        type: integer
+      imageUrl:
+        example: https://image-service.com/image.png
+        type: string
+      name:
+        example: agency name
+        type: string
+      status:
+        example: active
+        type: string
+    type: object
+  dto.ArtistDTO:
+    properties:
+      agencyId:
+        example: 1
+        type: integer
+      debutDate:
+        example: "2025-01-01T00:00:00Z"
+        type: string
+      id:
+        type: integer
+      imageUrl:
+        example: https://image-service.com/image.png
+        type: string
+      name:
+        example: Artist John Doe
+        type: string
+      numFollowers:
+        example: 100
+        type: integer
+      status:
+        example: disband
+        type: string
+    type: object
+  dto.ArtistsResponseDTO:
+    properties:
+      items:
+        items:
+          $ref: '#/definitions/dto.ArtistDTO'
+        type: array
+      skip:
+        type: integer
+      take:
+        type: integer
+      total:
+        type: integer
+    type: object
+  dto.CreateAgencyDTO:
+    properties:
+      imageUrl:
+        example: https://image-service.com/image.png
+        type: string
+      name:
+        example: agency name
+        type: string
+    required:
+    - name
+    type: object
+  dto.CreateArtistDTO:
+    properties:
+      agencyId:
+        example: 1
+        type: integer
+      debutDate:
+        example: "2025-01-01T00:00:00Z"
+        type: string
+      imageUrl:
+        example: https://image-service.com/image.png
+        type: string
+      name:
+        example: Artist John Doe
+        type: string
+    required:
+    - agencyId
+    - debutDate
+    - name
+    type: object
+  dto.ErrorResponse:
+    properties:
+      message:
+        example: Some error message
+        type: string
+      statusCode:
+        example: 400
+        type: integer
+    type: object
+  dto.SubscriptionResponseDTO:
+    properties:
+      artistId:
+        example: 10
+        type: integer
+      isFollowed:
+        example: true
+        type: boolean
+    type: object
+  dto.UpdateAgencyDTO:
+    properties:
+      imageUrl:
+        example: https://image-service.com/image.png
+        type: string
+      name:
+        example: agency name
+        type: string
+      status:
+        example: active
+        type: string
+    type: object
+  dto.UpdateArtistDTO:
+    properties:
+      agencyId:
+        example: 1
+        type: integer
+      debutDate:
+        example: "2025-01-01T00:00:00Z"
+        type: string
+      imageUrl:
+        example: https://image-service.com/image.png
+        type: string
+      name:
+        example: Artist John Doe
+        type: string
+      status:
+        example: disband
+        type: string
+    type: object
+info:
+  contact: {}
+  title: Agency service
+  version: "1.0"
+paths:
+  /v1/agencies:
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - default: 10
+        description: Take
+        in: query
+        name: take
+        type: integer
+      - default: 0
+        description: Skip
+        in: query
+        name: skip
+        type: integer
+      - default: ""
+        description: Query
+        in: query
+        name: query
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Agencies response
+          schema:
+            $ref: '#/definitions/dto.AgenciesResponseDTO'
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+      security:
+      - Bearer: []
+      summary: Get agencies
+      tags:
+      - Agencies
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Agency data
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dto.CreateAgencyDTO'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Agency response
+          schema:
+            $ref: '#/definitions/dto.AgencyDTO'
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+      security:
+      - Bearer: []
+      summary: Create an agency
+      tags:
+      - Agencies
+  /v1/agencies/{id}:
+    put:
+      consumes:
+      - application/json
+      parameters:
+      - description: Agency ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Agency data
+        in: body
+        name: request
+        schema:
+          $ref: '#/definitions/dto.UpdateAgencyDTO'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Agency response
+          schema:
+            $ref: '#/definitions/dto.AgencyDTO'
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+      security:
+      - Bearer: []
+      summary: Update an agency
+      tags:
+      - Agencies
+  /v1/artists:
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - default: 10
+        description: Take
+        in: query
+        name: take
+        type: integer
+      - default: 0
+        description: Skip
+        in: query
+        name: skip
+        type: integer
+      - default: ""
+        description: Query
+        in: query
+        name: query
+        type: string
+      - description: Agency ID
+        in: query
+        name: agencyId
+        type: integer
+      - default: false
+        description: Is User Followed
+        in: query
+        name: isUserFollowed
+        type: boolean
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Artists response
+          schema:
+            $ref: '#/definitions/dto.ArtistsResponseDTO'
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+      security:
+      - Bearer: []
+      summary: Get artists
+      tags:
+      - Artists
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Create artist request
+        in: body
+        name: request
+        schema:
+          $ref: '#/definitions/dto.CreateArtistDTO'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Artist response
+          schema:
+            $ref: '#/definitions/dto.ArtistDTO'
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+      security:
+      - Bearer: []
+      summary: Create an artist
+      tags:
+      - Artists
+  /v1/artists/{id}:
+    put:
+      consumes:
+      - application/json
+      parameters:
+      - description: Artist ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Update artist request
+        in: body
+        name: request
+        schema:
+          $ref: '#/definitions/dto.UpdateArtistDTO'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Artist response
+          schema:
+            $ref: '#/definitions/dto.ArtistDTO'
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+      security:
+      - Bearer: []
+      summary: Update an artist
+      tags:
+      - Artists
+  /v1/artists/{id}/subscription:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Artist ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Subscription response
+          schema:
+            $ref: '#/definitions/dto.SubscriptionResponseDTO'
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+      security:
+      - Bearer: []
+      summary: Handle a subscription to Artist
+      tags:
+      - Artists
+securityDefinitions:
+  Bearer:
+    in: header
+    name: Authorization
+    type: apiKey
+swagger: "2.0"

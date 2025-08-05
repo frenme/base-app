@@ -1,0 +1,10 @@
+[build]
+cmd = "go build -o main main.go"
+bin = "main"
+delay = 0
+pool = true
+include_dir = []
+exclude_dir = ["vendor", "node_modules"]
+
+[log]
+timestamp = true

@@ -1,0 +1,272 @@
+basePath: /api/user-service
+definitions:
+  dto.AuthRequestDTO:
+    properties:
+      password:
+        example: password
+        type: string
+      username:
+        example: john_doe
+        type: string
+    required:
+    - password
+    - username
+    type: object
+  dto.ErrorResponse:
+    properties:
+      message:
+        example: Some error message
+        type: string
+      statusCode:
+        example: 400
+        type: integer
+    type: object
+  dto.RefreshTokenRequestDTO:
+    properties:
+      refresh_token:
+        example: refresh_token
+        type: string
+    required:
+    - refresh_token
+    type: object
+  dto.TokenResponseDTO:
+    properties:
+      access_token:
+        example: access_token
+        type: string
+      expires_in:
+        example: 3600
+        type: integer
+      refresh_token:
+        example: refresh_token
+        type: string
+    type: object
+  dto.UpdateUserDTO:
+    properties:
+      birthDate:
+        example: "2025-01-01T00:00:00Z"
+        type: string
+      name:
+        example: John Doe
+        type: string
+      nationality:
+        example: USA
+        type: string
+      password:
+        example: password
+        type: string
+      username:
+        example: john_doe
+        type: string
+    type: object
+  dto.UserDTO:
+    properties:
+      birthDate:
+        example: "2025-01-01T00:00:00Z"
+        type: string
+      id:
+        type: integer
+      name:
+        example: John Doe
+        type: string
+      nationality:
+        example: USA
+        type: string
+      username:
+        example: john_doe
+        type: string
+    type: object
+  dto.UsersResponseDTO:
+    properties:
+      items:
+        items:
+          $ref: '#/definitions/dto.UserDTO'
+        type: array
+      skip:
+        type: integer
+      take:
+        type: integer
+      total:
+        type: integer
+    type: object
+info:
+  contact: {}
+  title: User service
+  version: "1.0"
+paths:
+  /v1/auth/login:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Login data
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dto.AuthRequestDTO'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Access tokens
+          schema:
+            $ref: '#/definitions/dto.TokenResponseDTO'
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+        "401":
+          description: Invalid credentials
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+      summary: Login
+      tags:
+      - Auth
+  /v1/auth/refresh:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Refresh token
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dto.RefreshTokenRequestDTO'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: New access tokens
+          schema:
+            $ref: '#/definitions/dto.TokenResponseDTO'
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+        "401":
+          description: Invalid token
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+      summary: Refresh token
+      tags:
+      - Auth
+  /v1/auth/register:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Registration data
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dto.AuthRequestDTO'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Access tokens
+          schema:
+            $ref: '#/definitions/dto.TokenResponseDTO'
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+      summary: Registration
+      tags:
+      - Auth
+  /v1/users:
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - default: 10
+        description: Take
+        in: query
+        name: take
+        type: integer
+      - default: 0
+        description: Skip
+        in: query
+        name: skip
+        type: integer
+      - default: ""
+        description: Query
+        in: query
+        name: query
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Users response
+          schema:
+            $ref: '#/definitions/dto.UsersResponseDTO'
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+      security:
+      - Bearer: []
+      summary: Get users
+      tags:
+      - Users
+  /v1/users/{id}:
+    put:
+      consumes:
+      - application/json
+      parameters:
+      - description: User ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: User data
+        in: body
+        name: request
+        schema:
+          $ref: '#/definitions/dto.UpdateUserDTO'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: User response
+          schema:
+            $ref: '#/definitions/dto.UserDTO'
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+      security:
+      - Bearer: []
+      summary: Update a user
+      tags:
+      - Users
+  /v1/users/current:
+    get:
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: User response
+          schema:
+            $ref: '#/definitions/dto.UserDTO'
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+      security:
+      - Bearer: []
+      summary: Get current user
+      tags:
+      - Users
+securityDefinitions:
+  Bearer:
+    in: header
+    name: Authorization
+    type: apiKey
+swagger: "2.0"

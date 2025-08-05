@@ -1,53 +1,63 @@
 package main
 
 import (
-	"context"
-	"github.com/gin-gonic/gin"
-	"github.com/segmentio/kafka-go"
-	"log"
-	"net/http"
 	"os"
-	"strings"
+	"shared/pkg/middleware"
+	sharedUtils "shared/pkg/utils"
+	_ "user/docs"
+	"user/internal/db"
+	"user/internal/repository"
+	"user/internal/utils"
+
+	sharedConstants "shared/pkg/constants"
+	auth "user/internal/modules/auth"
+	authRoutes "user/internal/modules/auth/handlers/v1"
+	user "user/internal/modules/user"
+	userRoutes "user/internal/modules/user/handlers/v1"
+
+	"github.com/gin-gonic/gin"
+	swaggerFiles "github.com/swaggo/files"
+	ginSwagger "github.com/swaggo/gin-swagger"
 )
 
+// @title User service
+// @version 1.0
+// @BasePath /api/user-service
+// @securityDefinitions.apikey Bearer
+// @in header
+// @name Authorization
 func main() {
-	go func() {
-		kafkaConsumer()
-	}()
+	db.InitConnections()
 
 	gin.SetMode(gin.ReleaseMode)
-	r := gin.Default()
-	r.GET("/", func(c *gin.Context) {
-		hostname, err := os.Hostname()
-		if err != nil {
-			return
+	router := gin.Default()
+	router.GET(utils.APIBasePath+"/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
+
+	logger := sharedUtils.CreateLogger()
+
+	authMiddleware := middleware.AuthMiddleware(sharedConstants.JwtConfig.SecretKey)
+
+	userRepository := repository.NewRepository()
+
+	userService := user.NewService(userRepository)
+	authService := auth.NewService(sharedConstants.JwtConfig)
+
+	userHandler := userRoutes.NewHandler(userService, logger)
+	authHandler := authRoutes.NewHandler(authService, logger)
+
+	userRoutes := userRoutes.NewRoutes(userHandler)
+	authRoutes := authRoutes.NewRoutes(authHandler)
+
+	groupV1 := router.Group(utils.APIBasePath + "/v1")
+	{
+		authRoutes.RegisterRoutes(groupV1)
+
+		protectedGroup := groupV1.Group("")
+		protectedGroup.Use(authMiddleware)
+		{
+			userRoutes.RegisterRoutes(protectedGroup)
 		}
-
-		c.JSON(http.StatusOK, gin.H{
-			"service":  "user-service1",
-			"hostname": hostname,
-		})
-	})
-	r.Run(":" + os.Getenv("USER_SERVICE_PORT"))
-}
-
-func kafkaConsumer() {
-	brokers := strings.Split(os.Getenv("KAFKA_BROKERS"), ",")
-	reader := kafka.NewReader(kafka.ReaderConfig{
-		Brokers:  brokers,
-		Topic:    "example-topic",
-		GroupID:  "my-group",
-		MinBytes: 0,
-		MaxBytes: 10e6,
-	})
-	defer reader.Close()
-
-	for {
-		msg, err := reader.ReadMessage(context.Background())
-		if err != nil {
-			log.Println("Kafka consumer error: ", err)
-			continue
-		}
-		log.Printf("Kafka message got: value=%s, offset=%d", string(msg.Value), msg.Offset)
 	}
+
+	router.Run(":" + os.Getenv("USER_SERVICE_PORT"))
 }

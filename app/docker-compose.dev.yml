@@ -12,6 +12,21 @@ x-micro-service: &micro-service
       max-file: "3"
 
 services:
+  agency-service:
+    <<: *micro-service
+    image: agency-service:0.0.1-dev
+    build:
+      context: .
+      dockerfile: agency-service/Dockerfile.dev
+      args:
+        GOLANG_VERSION: ${GOLANG_VERSION}
+    networks:
+      app_shared_network:
+        aliases:
+          - agency-service-golang
+    expose:
+      - "${AGENCY_SERVICE_PORT}"
+
   user-service:
     <<: *micro-service
     image: user-service:0.0.1-dev
@@ -27,20 +42,20 @@ services:
     expose:
       - "${USER_SERVICE_PORT}"
 
-  order-service:
-    <<: *micro-service
-    image: order-service:0.0.1-dev
-    build:
-      context: .
-      dockerfile: order-service/Dockerfile.dev
-      args:
-        GOLANG_VERSION: ${GOLANG_VERSION}
-    networks:
-      app_shared_network:
-        aliases:
-          - order-service-golang
-    expose:
-      - "${ORDER_SERVICE_PORT}"
+#  card-service:
+#    <<: *micro-service
+#    image: card-service:0.0.1-dev
+#    build:
+#      context: .
+#      dockerfile: card-service/Dockerfile.dev
+#      args:
+#        GOLANG_VERSION: ${GOLANG_VERSION}
+#    networks:
+#      app_shared_network:
+#        aliases:
+#          - card-service-golang
+#    expose:
+#      - "${CARD_SERVICE_PORT}"
 
   shared-service:
     <<: *micro-service
@@ -54,8 +69,6 @@ services:
       app_shared_network:
         aliases:
           - shared-service-golang
-    expose:
-      - "${SHARED_SERVICE_PORT}"
 
 networks:
   app_shared_network:

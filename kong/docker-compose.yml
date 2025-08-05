@@ -10,7 +10,7 @@ services:
     ports:
       - "8000:8000"  # HTTP
       - "8443:8443"  # HTTPS
-      - "8001:8001"  # Admin API порт (HTTP)
+      - "8001:8001"  # Admin API port (HTTP)
     networks:
       - app_shared_network
     logging:
