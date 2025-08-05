@@ -70,7 +70,7 @@ func TestUpdateUser(t *testing.T) {
 	mockRepo := new(MockRepository)
 	service := &Service{repo: mockRepo}
 
-	userId := 1
+	userID := 1
 	newName := "New name"
 	birthday := time.Date(1990, 1, 1, 0, 0, 0, 0, time.UTC)
 
@@ -80,7 +80,7 @@ func TestUpdateUser(t *testing.T) {
 	}
 
 	expectedUser := &models.User{
-		ID:        userId,
+		ID:        userID,
 		Username:  "existingUser",
 		Name:      &newName,
 		BirthDate: &birthday,
@@ -88,9 +88,9 @@ func TestUpdateUser(t *testing.T) {
 
 	ctx := context.Background()
 
-	mockRepo.On("UpdateUser", ctx, userId, updateRequest).Return(expectedUser, nil)
+	mockRepo.On("UpdateUser", ctx, userID, updateRequest).Return(expectedUser, nil)
 
-	user, err := service.UpdateUser(ctx, userId, updateRequest)
+	user, err := service.UpdateUser(ctx, userID, updateRequest)
 
 	assert.NoError(t, err)
 	assert.NotNil(t, user)
