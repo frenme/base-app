@@ -1,7 +1,8 @@
 #!/bin/bash
 
 # dev or prod
-dirs=("app" "kong" "kafka" "redis" "mongo" "postgres")
+dirs=("app" "kong" "postgres")
+# dirs=("app" "kong" "kafka" "redis" "mongo" "postgres")
 
 # make files runnable
 chmod +x kafka/setup.sh redis/setup.sh mongo/setup.sh mongo/generate-keyfile.sh

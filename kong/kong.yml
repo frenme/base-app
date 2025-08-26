@@ -6,25 +6,17 @@ services:
     url: http://user-service-golang:8081
     routes:
       - name: user-routes
-        strip_path: true
-        paths:
-          - /user
-
-  - name: order-service-golang
-    url: http://order-service-golang:8082
-    routes:
-      - name: order-routes
         strip_path: false
         paths:
-          - /api
+          - /api/user-service
 
-  - name: shared-service
-    url: http://shared-service-golang:8083
+  - name: agency-service-golang
+    url: http://agency-service-golang:8082
     routes:
-      - name: shared-routes
-        strip_path: true
+      - name: agency-routes
+        strip_path: false
         paths:
-          - /shared
+          - /api/agency-service
 
 plugins:
   - name: prometheus

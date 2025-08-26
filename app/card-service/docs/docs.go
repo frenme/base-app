@@ -15,38 +15,13 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
-        "/v1": {
+        "/v1/cards": {
             "get": {
-                "description": "Some description for this route",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "order"
-                ],
-                "summary": "Get order data",
-                "responses": {
-                    "200": {
-                        "description": "Info about order",
-                        "schema": {
-                            "type": "string"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad request",
-                        "schema": {
-                            "type": "string"
-                        }
+                "security": [
+                    {
+                        "Bearer": []
                     }
-                }
-            }
-        },
-        "/v1/redis": {
-            "get": {
-                "description": "Some description for this route",
+                ],
                 "consumes": [
                     "application/json"
                 ],
@@ -54,59 +29,124 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "caching"
+                    "Cards"
                 ],
-                "summary": "Cache with Redis",
-                "responses": {
-                    "200": {
-                        "description": "Info about order",
-                        "schema": {
-                            "type": "string"
-                        }
+                "summary": "Get cards",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "default": 10,
+                        "description": "Take",
+                        "name": "take",
+                        "in": "query"
                     },
-                    "400": {
-                        "description": "Bad request",
-                        "schema": {
-                            "type": "string"
-                        }
+                    {
+                        "type": "integer",
+                        "default": 0,
+                        "description": "Skip",
+                        "name": "skip",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "default": "",
+                        "description": "Query",
+                        "name": "query",
+                        "in": "query"
                     }
-                }
-            }
-        },
-        "/v2": {
-            "get": {
-                "description": "Some description for this route",
-                "consumes": [
-                    "application/json"
                 ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "order"
-                ],
-                "summary": "Get order data - v2",
                 "responses": {
                     "200": {
-                        "description": "Info about order",
+                        "description": "Cards response",
                         "schema": {
-                            "type": "string"
+                            "$ref": "#/definitions/dto.CardsResponseDTO"
                         }
                     },
                     "400": {
                         "description": "Bad request",
                         "schema": {
-                            "type": "string"
+                            "$ref": "#/definitions/dto.ErrorResponse"
                         }
                     }
                 }
             }
         }
     },
+    "definitions": {
+        "dto.CardDTO": {
+            "type": "object",
+            "properties": {
+                "back_image_url": {
+                    "type": "string",
+                    "example": "Card Back Image URL"
+                },
+                "description": {
+                    "type": "string",
+                    "example": "Card Description"
+                },
+                "front_image_url": {
+                    "type": "string",
+                    "example": "Card Front Image URL"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "string",
+                    "example": "Card Name"
+                },
+                "num_users_own": {
+                    "type": "integer",
+                    "example": 5
+                },
+                "num_users_wish": {
+                    "type": "integer",
+                    "example": 10
+                },
+                "status": {
+                    "type": "string",
+                    "example": "Card Status"
+                }
+            }
+        },
+        "dto.CardsResponseDTO": {
+            "type": "object",
+            "properties": {
+                "items": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/dto.CardDTO"
+                    }
+                },
+                "skip": {
+                    "type": "integer"
+                },
+                "take": {
+                    "type": "integer"
+                },
+                "total": {
+                    "type": "integer"
+                }
+            }
+        },
+        "dto.ErrorResponse": {
+            "type": "object",
+            "properties": {
+                "message": {
+                    "type": "string",
+                    "example": "Some error message"
+                },
+                "statusCode": {
+                    "type": "integer",
+                    "example": 400
+                }
+            }
+        }
+    },
     "securityDefinitions": {
-        "CustomToken": {
+        "Bearer": {
             "type": "apiKey",
-            "name": "X-Custom-Token",
+            "name": "Authorization",
             "in": "header"
         }
     }
@@ -116,10 +156,10 @@ const docTemplate = `{
 var SwaggerInfo = &swag.Spec{
 	Version:          "1.0",
 	Host:             "",
-	BasePath:         "/api",
+	BasePath:         "/api/card-service",
 	Schemes:          []string{},
-	Title:            "Base API",
-	Description:      "Golang project",
+	Title:            "Card service",
+	Description:      "",
 	InfoInstanceName: "swagger",
 	SwaggerTemplate:  docTemplate,
 	LeftDelim:        "{{",

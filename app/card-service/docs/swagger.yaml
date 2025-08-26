@@ -1,70 +1,97 @@
-basePath: /api
+basePath: /api/card-service
+definitions:
+  dto.CardDTO:
+    properties:
+      back_image_url:
+        example: Card Back Image URL
+        type: string
+      description:
+        example: Card Description
+        type: string
+      front_image_url:
+        example: Card Front Image URL
+        type: string
+      id:
+        type: integer
+      name:
+        example: Card Name
+        type: string
+      num_users_own:
+        example: 5
+        type: integer
+      num_users_wish:
+        example: 10
+        type: integer
+      status:
+        example: Card Status
+        type: string
+    type: object
+  dto.CardsResponseDTO:
+    properties:
+      items:
+        items:
+          $ref: '#/definitions/dto.CardDTO'
+        type: array
+      skip:
+        type: integer
+      take:
+        type: integer
+      total:
+        type: integer
+    type: object
+  dto.ErrorResponse:
+    properties:
+      message:
+        example: Some error message
+        type: string
+      statusCode:
+        example: 400
+        type: integer
+    type: object
 info:
   contact: {}
-  description: Golang project
-  title: Base API
+  title: Card service
   version: "1.0"
 paths:
-  /v1:
+  /v1/cards:
     get:
       consumes:
       - application/json
-      description: Some description for this route
+      parameters:
+      - default: 10
+        description: Take
+        in: query
+        name: take
+        type: integer
+      - default: 0
+        description: Skip
+        in: query
+        name: skip
+        type: integer
+      - default: ""
+        description: Query
+        in: query
+        name: query
+        type: string
       produces:
       - application/json
       responses:
         "200":
-          description: Info about order
+          description: Cards response
           schema:
-            type: string
+            $ref: '#/definitions/dto.CardsResponseDTO'
         "400":
           description: Bad request
           schema:
-            type: string
-      summary: Get order data
+            $ref: '#/definitions/dto.ErrorResponse'
+      security:
+      - Bearer: []
+      summary: Get cards
       tags:
-      - order
-  /v1/redis:
-    get:
-      consumes:
-      - application/json
-      description: Some description for this route
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: Info about order
-          schema:
-            type: string
-        "400":
-          description: Bad request
-          schema:
-            type: string
-      summary: Cache with Redis
-      tags:
-      - caching
-  /v2:
-    get:
-      consumes:
-      - application/json
-      description: Some description for this route
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: Info about order
-          schema:
-            type: string
-        "400":
-          description: Bad request
-          schema:
-            type: string
-      summary: Get order data - v2
-      tags:
-      - order
+      - Cards
 securityDefinitions:
-  CustomToken:
+  Bearer:
     in: header
-    name: X-Custom-Token
+    name: Authorization
     type: apiKey
 swagger: "2.0"

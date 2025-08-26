@@ -4,8 +4,8 @@ type Card struct {
 	ID            int
 	Name          string
 	Description   string
-	FrontImageUrl string
-	BackImageUrl  string
+	FrontImageURL string
+	BackImageURL  string
 	NumUsersOwn   int
 	NumUsersWish  int
 	Status        CollectStatus

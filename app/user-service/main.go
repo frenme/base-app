@@ -3,13 +3,13 @@ package main
 import (
 	"os"
 	"shared/pkg/middleware"
-	sharedUtils "shared/pkg/utils"
 	_ "user/docs"
 	"user/internal/db"
 	"user/internal/repository"
 	"user/internal/utils"
 
-	sharedConstants "shared/pkg/constants"
+	sharedConfig "shared/pkg/config"
+	"shared/pkg/logger"
 	auth "user/internal/modules/auth"
 	authRoutes "user/internal/modules/auth/handlers/v1"
 	user "user/internal/modules/user"
@@ -33,14 +33,15 @@ func main() {
 	router := gin.Default()
 	router.GET(utils.APIBasePath+"/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
-	logger := sharedUtils.CreateLogger()
+	logger := logger.New()
 
-	authMiddleware := middleware.AuthMiddleware(sharedConstants.JwtConfig.SecretKey)
+	authMiddleware := middleware.AuthMiddleware(sharedConfig.JwtConfig.SecretKey)
+	reqIDMiddleware := middleware.RequestIDMiddleware()
 
 	userRepository := repository.NewRepository()
 
 	userService := user.NewService(userRepository)
-	authService := auth.NewService(sharedConstants.JwtConfig)
+	authService := auth.NewService(sharedConfig.JwtConfig)
 
 	userHandler := userRoutes.NewHandler(userService, logger)
 	authHandler := authRoutes.NewHandler(authService, logger)
@@ -54,6 +55,7 @@ func main() {
 
 		protectedGroup := groupV1.Group("")
 		protectedGroup.Use(authMiddleware)
+		protectedGroup.Use(reqIDMiddleware)
 		{
 			userRoutes.RegisterRoutes(protectedGroup)
 		}

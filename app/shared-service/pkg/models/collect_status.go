@@ -1,9 +1,9 @@
 package models
 
-type CollectStatus int
+type CollectStatus string
 
 const (
-	Owned CollectStatus = iota
-	Wishlist
-	Waiting
+	Owned    CollectStatus = "owned"
+	Wishlist CollectStatus = "wishlist"
+	Waiting  CollectStatus = "waiting"
 )

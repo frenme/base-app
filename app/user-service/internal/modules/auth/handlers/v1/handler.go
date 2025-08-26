@@ -5,8 +5,9 @@ import (
 	"net/http"
 	"user/internal/modules/auth"
 
-	sharedConstants "shared/pkg/constants"
+	sharedConfig "shared/pkg/config"
 	sharedDTO "shared/pkg/dto"
+	"shared/pkg/logger"
 	sharedUtils "shared/pkg/utils"
 	"user/internal/dto"
 
@@ -15,10 +16,10 @@ import (
 
 type Handler struct {
 	service *auth.Service
-	logger  *sharedUtils.Logger
+	logger  *logger.Logger
 }
 
-func NewHandler(service *auth.Service, logger *sharedUtils.Logger) *Handler {
+func NewHandler(service *auth.Service, logger *logger.Logger) *Handler {
 	return &Handler{service: service, logger: logger}
 }
 
@@ -35,7 +36,7 @@ func (h *Handler) Register(c *gin.Context) {
 	h.logger.Info("register request")
 	h.logger.Info(sharedDTO.ErrorResponse{})
 
-	ctx, cancel := context.WithTimeout(c, sharedConstants.Timeout)
+	ctx, cancel := context.WithTimeout(c, sharedConfig.Timeout)
 	defer cancel()
 
 	req := h.getRequestBody(c)
@@ -66,7 +67,7 @@ func (h *Handler) Register(c *gin.Context) {
 func (h *Handler) Login(c *gin.Context) {
 	h.logger.Infof("login request")
 
-	ctx, cancel := context.WithTimeout(c, sharedConstants.Timeout)
+	ctx, cancel := context.WithTimeout(c, sharedConfig.Timeout)
 	defer cancel()
 
 	req := h.getRequestBody(c)
@@ -97,7 +98,7 @@ func (h *Handler) Login(c *gin.Context) {
 func (h *Handler) RefreshToken(c *gin.Context) {
 	h.logger.Info("refresh token request")
 
-	ctx, cancel := context.WithTimeout(c, sharedConstants.Timeout)
+	ctx, cancel := context.WithTimeout(c, sharedConfig.Timeout)
 	defer cancel()
 
 	var req dto.RefreshTokenRequestDTO

@@ -1,68 +1,74 @@
 package main
 
 import (
-	"database/sql"
 	"log/slog"
-	"os"
-	"shared/pkg/utils"
+	"shared/pkg/config"
+	"shared/pkg/db"
+	"shared/pkg/logger"
 	"time"
 
 	"github.com/golang-migrate/migrate/v4"
-	"github.com/golang-migrate/migrate/v4/database/pgx"
+	"github.com/golang-migrate/migrate/v4/database/postgres"
 	_ "github.com/golang-migrate/migrate/v4/source/file"
-	_ "github.com/jackc/pgx/v4/stdlib"
+	"gorm.io/gorm"
 )
 
-var logger *utils.Logger
+var log *logger.Logger
 
 func init() {
-	logger = utils.CreateLogger()
+	log = logger.New()
 }
 
 func main() {
-	logger.Info("Shared service started")
+	log.Info("Shared service started")
 
 	makeMigration()
 }
 
 func makeMigration() {
-	connectionString := os.Getenv("POSTGRES_MASTER_CONNECTION")
-
+	var gormDB *gorm.DB
 	const attempts = 100
 	for i := 1; i <= attempts; i++ {
-		db, err := sql.Open("pgx", connectionString)
-		if err == nil && db.Ping() == nil {
-			db.Close()
-			break
+		gormDB = db.CreatePostgresClient(config.GetPostgresConfig())
+		if gormDB != nil {
+			sqlDB, err := gormDB.DB()
+			if err == nil && sqlDB.Ping() == nil {
+				break
+			}
 		}
-		logger.Info("Attempt to initialize connections: ", slog.Int("attempt", i))
+		log.Info("Attempt to initialize connections: ", slog.Int("attempt", i))
 		time.Sleep(2 * time.Second)
 		if i == attempts {
-			logger.Error("Failed to initialize PostgreSQL connection after maximum attempts")
+			log.Error("Failed to initialize PostgreSQL connection after maximum attempts")
+			return
 		}
 	}
 
-	db, err := sql.Open("pgx", connectionString)
+	sqlDB, err := gormDB.DB()
 	if err != nil {
-		logger.Errorf("sql.Open: %v", err)
+		log.Errorf("Failed to get sql.DB from GORM: %v", err)
+		return
 	}
-	defer db.Close()
+	defer sqlDB.Close()
 
-	driver, err := pgx.WithInstance(db, &pgx.Config{})
+	driver, err := postgres.WithInstance(sqlDB, &postgres.Config{})
 	if err != nil {
-		logger.Errorf("pgx.WithInstance: %v", err)
+		log.Errorf("postgres.WithInstance: %v", err)
+		return
 	}
 
 	m, err := migrate.NewWithDatabaseInstance(
-		"file://migrations", "pgx", driver,
+		"file://migrations", "postgres", driver,
 	)
 	if err != nil {
-		logger.Errorf("migrate.NewWithDatabaseInstance: %v", err)
+		log.Errorf("migrate.NewWithDatabaseInstance: %v", err)
+		return
 	}
 
 	if err := m.Up(); err != nil && err != migrate.ErrNoChange {
-		logger.Errorf("m.Up: %v", err)
+		log.Errorf("m.Up: %v", err)
+		return
 	}
 
-	logger.Info("Migrations applied successfully")
+	log.Info("Migrations applied successfully")
 }

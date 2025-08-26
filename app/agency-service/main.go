@@ -10,10 +10,10 @@ import (
 	"agency/internal/repository"
 	"agency/internal/utils"
 	"os"
+	"shared/pkg/logger"
 	"shared/pkg/middleware"
-	sharedUtils "shared/pkg/utils"
 
-	sharedConstants "shared/pkg/constants"
+	sharedConfig "shared/pkg/config"
 
 	"github.com/gin-gonic/gin"
 	swaggerFiles "github.com/swaggo/files"
@@ -33,9 +33,10 @@ func main() {
 	router := gin.Default()
 	router.GET(utils.APIBasePath+"/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
-	logger := sharedUtils.CreateLogger()
+	logger := logger.New()
 
-	authMiddleware := middleware.AuthMiddleware(sharedConstants.JwtConfig.SecretKey)
+	authMiddleware := middleware.AuthMiddleware(sharedConfig.JwtConfig.SecretKey)
+	reqIDMiddleware := middleware.RequestIDMiddleware()
 
 	repository := repository.NewRepository(db.PostgresDB)
 
@@ -51,6 +52,7 @@ func main() {
 	{
 		protectedGroup := groupV1.Group("")
 		protectedGroup.Use(authMiddleware)
+		protectedGroup.Use(reqIDMiddleware)
 		{
 			artistRoutes.RegisterRoutes(protectedGroup)
 			agencyRoutes.RegisterRoutes(protectedGroup)

@@ -3,8 +3,9 @@ package v1
 import (
 	"context"
 	"net/http"
-	sharedConstants "shared/pkg/constants"
+	sharedConfig "shared/pkg/config"
 	sharedDTO "shared/pkg/dto"
+	"shared/pkg/logger"
 	sharedUtils "shared/pkg/utils"
 	"strconv"
 	"user/internal/dto"
@@ -16,10 +17,10 @@ import (
 
 type Handler struct {
 	service *user.Service
-	logger  *sharedUtils.Logger
+	logger  *logger.Logger
 }
 
-func NewHandler(service *user.Service, logger *sharedUtils.Logger) *Handler {
+func NewHandler(service *user.Service, logger *logger.Logger) *Handler {
 	return &Handler{service: service, logger: logger}
 }
 
@@ -38,7 +39,7 @@ func NewHandler(service *user.Service, logger *sharedUtils.Logger) *Handler {
 func (h *Handler) GetUsers(c *gin.Context) {
 	h.logger.Info("get all users")
 
-	ctx, cancel := context.WithTimeout(c, sharedConstants.Timeout)
+	ctx, cancel := context.WithTimeout(c, sharedConfig.Timeout)
 	defer cancel()
 
 	var req dto.UsersRequestDTO
@@ -82,7 +83,7 @@ func (h *Handler) GetUsers(c *gin.Context) {
 func (h *Handler) GetCurrentUser(c *gin.Context) {
 	h.logger.Info("get current user")
 
-	ctx, cancel := context.WithTimeout(c, sharedConstants.Timeout)
+	ctx, cancel := context.WithTimeout(c, sharedConfig.Timeout)
 	defer cancel()
 
 	user, err := h.service.GetCurrentUser(ctx)
@@ -108,7 +109,7 @@ func (h *Handler) GetCurrentUser(c *gin.Context) {
 func (h *Handler) UpdateUser(c *gin.Context) {
 	h.logger.Info("update a user")
 
-	ctx, cancel := context.WithTimeout(c, sharedConstants.Timeout)
+	ctx, cancel := context.WithTimeout(c, sharedConfig.Timeout)
 	defer cancel()
 
 	id := c.Param("id")

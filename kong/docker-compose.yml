@@ -20,8 +20,8 @@ services:
     volumes:
       - ./kong.yml:/usr/local/kong/kong.yml
       - ./kong.conf:/etc/kong/kong.conf
-      - ./certs/localhost.pem:/etc/kong/ssl/localhost.pem
-      - ./certs/localhost-key.pem:/etc/kong/ssl/localhost-key.pem
+      - ./certs/localhost+2.pem:/etc/kong/ssl/localhost+2.pem
+      - ./certs/localhost+2-key.pem:/etc/kong/ssl/localhost+2-key.pem
 
 networks:
   app_shared_network:

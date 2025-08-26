@@ -5,8 +5,9 @@ import (
 	"agency/internal/modules/agency"
 	"context"
 	"net/http"
-	sharedConstants "shared/pkg/constants"
+	sharedConfig "shared/pkg/config"
 	sharedDTO "shared/pkg/dto"
+	"shared/pkg/logger"
 	sharedUtils "shared/pkg/utils"
 	"strconv"
 
@@ -15,10 +16,10 @@ import (
 
 type Handler struct {
 	service *agency.Service
-	logger  *sharedUtils.Logger
+	logger  *logger.Logger
 }
 
-func NewHandler(service *agency.Service, logger *sharedUtils.Logger) *Handler {
+func NewHandler(service *agency.Service, logger *logger.Logger) *Handler {
 	return &Handler{service: service, logger: logger}
 }
 
@@ -37,7 +38,7 @@ func NewHandler(service *agency.Service, logger *sharedUtils.Logger) *Handler {
 func (h *Handler) GetAgencies(c *gin.Context) {
 	h.logger.Info("get all agencies")
 
-	ctx, cancel := context.WithTimeout(c, sharedConstants.Timeout)
+	ctx, cancel := context.WithTimeout(c, sharedConfig.Timeout)
 	defer cancel()
 
 	var req dto.AgenciesRequestDTO
@@ -82,7 +83,7 @@ func (h *Handler) GetAgencies(c *gin.Context) {
 func (h *Handler) CreateAgency(c *gin.Context) {
 	h.logger.Info("create an agency")
 
-	ctx, cancel := context.WithTimeout(c, sharedConstants.Timeout)
+	ctx, cancel := context.WithTimeout(c, sharedConfig.Timeout)
 	defer cancel()
 
 	var req dto.CreateAgencyDTO
@@ -113,7 +114,7 @@ func (h *Handler) CreateAgency(c *gin.Context) {
 func (h *Handler) UpdateAgency(c *gin.Context) {
 	h.logger.Info("update an agency")
 
-	ctx, cancel := context.WithTimeout(c, sharedConstants.Timeout)
+	ctx, cancel := context.WithTimeout(c, sharedConfig.Timeout)
 	defer cancel()
 
 	idStr := c.Param("id")

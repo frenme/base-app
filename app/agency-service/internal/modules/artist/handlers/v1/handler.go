@@ -6,8 +6,9 @@ import (
 	"agency/internal/utils"
 	"context"
 	"net/http"
-	sharedConstants "shared/pkg/constants"
+	sharedConfig "shared/pkg/config"
 	sharedDTO "shared/pkg/dto"
+	"shared/pkg/logger"
 	sharedUtils "shared/pkg/utils"
 	"strconv"
 
@@ -16,10 +17,10 @@ import (
 
 type Handler struct {
 	service *artist.Service
-	logger  *sharedUtils.Logger
+	logger  *logger.Logger
 }
 
-func NewHandler(service *artist.Service, logger *sharedUtils.Logger) *Handler {
+func NewHandler(service *artist.Service, logger *logger.Logger) *Handler {
 	return &Handler{service: service, logger: logger}
 }
 
@@ -36,7 +37,7 @@ func NewHandler(service *artist.Service, logger *sharedUtils.Logger) *Handler {
 func (h *Handler) CreateArtist(c *gin.Context) {
 	h.logger.Info("create an artist")
 
-	ctx, cancel := context.WithTimeout(c, sharedConstants.Timeout)
+	ctx, cancel := context.WithTimeout(c, sharedConfig.Timeout)
 	defer cancel()
 
 	var req dto.CreateArtistDTO
@@ -67,7 +68,7 @@ func (h *Handler) CreateArtist(c *gin.Context) {
 func (h *Handler) UpdateArtist(c *gin.Context) {
 	h.logger.Info("update an artist")
 
-	ctx, cancel := context.WithTimeout(c, sharedConstants.Timeout)
+	ctx, cancel := context.WithTimeout(c, sharedConfig.Timeout)
 	defer cancel()
 
 	id := c.Param("id")
@@ -106,7 +107,7 @@ func (h *Handler) UpdateArtist(c *gin.Context) {
 func (h *Handler) GetArtists(c *gin.Context) {
 	h.logger.Info("get all artists")
 
-	ctx, cancel := context.WithTimeout(c, sharedConstants.Timeout)
+	ctx, cancel := context.WithTimeout(c, sharedConfig.Timeout)
 	defer cancel()
 
 	var req dto.ArtistsRequestDTO
@@ -152,7 +153,7 @@ func (h *Handler) HandleSubscription(c *gin.Context) {
 	h.logger.Info("handle a subscription")
 	h.logger.Info(sharedDTO.ErrorResponse{})
 
-	ctx, cancel := context.WithTimeout(c, sharedConstants.Timeout)
+	ctx, cancel := context.WithTimeout(c, sharedConfig.Timeout)
 	defer cancel()
 
 	id := c.Param("id")
