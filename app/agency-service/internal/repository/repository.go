@@ -7,18 +7,17 @@ import (
 	"agency/internal/utils"
 	"context"
 	"fmt"
+	shareddb "shared/pkg/db"
 	"shared/pkg/models"
-	sharedUtils "shared/pkg/utils"
+	sharedutils "shared/pkg/utils"
 	"strings"
-
-	"gorm.io/gorm"
 )
 
 type Repository struct {
-	db *gorm.DB
+	db shareddb.Postgres
 }
 
-func NewRepository(db *gorm.DB) *Repository {
+func NewRepository(db shareddb.Postgres) *Repository {
 	return &Repository{db: db}
 }
 
@@ -51,8 +50,8 @@ func (r *Repository) GetAgencyByID(ctx context.Context, id int) (*entity.AgencyE
 	var agencyEntity entity.AgencyEntity
 	err := r.db.WithContext(ctx).First(&agencyEntity, id).Error
 	if err != nil {
-		return nil, &sharedUtils.ErrorStatus{
-			Base: sharedUtils.ErrorNotFound,
+		return nil, &sharedutils.ErrorStatus{
+			Base: sharedutils.ErrorNotFound,
 			Msg:  "agency not found",
 		}
 	}
@@ -69,7 +68,7 @@ func (r *Repository) CreateAgency(ctx context.Context, req dto.CreateAgencyDTO) 
 
 	err := r.db.WithContext(ctx).Create(&agencyEntity).Error
 	if err != nil {
-		return nil, &sharedUtils.ErrorStatus{
+		return nil, &sharedutils.ErrorStatus{
 			Base: err,
 			Msg:  "failed to create agency",
 		}
@@ -198,8 +197,8 @@ func (r *Repository) GetArtists(ctx context.Context, req dto.ArtistsRequestDTO, 
 func (r *Repository) GetArtistByID(ctx context.Context, id int) (*models.Artist, error) {
 	var artistRecord entity.ArtistEntity
 	if err := db.PostgresDB.WithContext(ctx).First(&artistRecord, id).Error; err != nil {
-		return nil, &sharedUtils.ErrorStatus{
-			Base: sharedUtils.ErrorNotFound,
+		return nil, &sharedutils.ErrorStatus{
+			Base: sharedutils.ErrorNotFound,
 			Msg:  "artist not found",
 		}
 	}

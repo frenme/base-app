@@ -1,16 +1,13 @@
 package db
 
 import (
-	"log/slog"
-	"shared/pkg/config"
+	"os"
 	"shared/pkg/db"
 	"shared/pkg/logger"
-	"time"
-
-	"gorm.io/gorm"
 )
 
-var PostgresDB *gorm.DB
+var PostgresDB db.Postgres
+var MongoDB db.Mongo
 var log *logger.Logger
 
 func init() {
@@ -18,22 +15,11 @@ func init() {
 }
 
 func InitConnections() {
-	maxAttempts := 100
-	for attempt := 1; attempt <= maxAttempts; attempt++ {
-		log.Info("Attempt to initialize connections: ", slog.Int("attempt", attempt))
+	PostgresDB = db.GetPostgresClient(
+		os.Getenv("POSTGRES_MASTER_CONNECTION"),
+		os.Getenv("POSTGRES_REPLICA_CONNECTION"),
+		"agency-service",
+	)
 
-		if PostgresDB == nil {
-			PostgresDB = db.CreatePostgresClient(config.GetPostgresConfig())
-		}
-
-		if PostgresDB != nil {
-			break
-		}
-
-		time.Sleep(10 * time.Second)
-	}
-
-	if PostgresDB == nil {
-		log.Error("Failed to initialize all connections after maximum attempts")
-	}
+	MongoDB = db.CreateMongoClient(os.Getenv("MONGO_CONNECTION"), "agency-service")
 }

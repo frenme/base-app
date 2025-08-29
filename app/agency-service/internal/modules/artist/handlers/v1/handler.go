@@ -6,10 +6,10 @@ import (
 	"agency/internal/utils"
 	"context"
 	"net/http"
-	sharedConfig "shared/pkg/config"
-	sharedDTO "shared/pkg/dto"
+	sharedconfig "shared/pkg/config"
+	shareddto "shared/pkg/dto"
 	"shared/pkg/logger"
-	sharedUtils "shared/pkg/utils"
+	sharedutils "shared/pkg/utils"
 	"strconv"
 
 	"github.com/gin-gonic/gin"
@@ -32,22 +32,22 @@ func NewHandler(service *artist.Service, logger *logger.Logger) *Handler {
 // @Produce     json
 // @Param       request body dto.CreateArtistDTO false "Create artist request"
 // @Success     200  {object}  dto.ArtistDTO "Artist response"
-// @Failure     400  {object}  sharedDTO.ErrorResponse "Bad request"
+// @Failure     400  {object}  shareddto.ErrorResponse "Bad request"
 // @Router      /v1/artists [post]
 func (h *Handler) CreateArtist(c *gin.Context) {
 	h.logger.Info("create an artist")
 
-	ctx, cancel := context.WithTimeout(c, sharedConfig.Timeout)
+	ctx, cancel := context.WithTimeout(c, sharedconfig.Timeout)
 	defer cancel()
 
 	var req dto.CreateArtistDTO
-	sharedUtils.HandleBodyRequestData(c, &req)
+	sharedutils.HandleBodyRequestData(c, &req)
 
-	sharedUtils.TrimStrings(&req)
+	sharedutils.TrimStrings(&req)
 
 	artist, err := h.service.CreateArtist(ctx, req)
 	if err != nil {
-		sharedUtils.HandleError(c, err)
+		sharedutils.HandleError(c, err)
 		return
 	}
 
@@ -63,27 +63,27 @@ func (h *Handler) CreateArtist(c *gin.Context) {
 // @Param       id path int true "Artist ID"
 // @Param       request body dto.UpdateArtistDTO false "Update artist request"
 // @Success     200  {object}  dto.ArtistDTO "Artist response"
-// @Failure     400  {object}  sharedDTO.ErrorResponse "Bad request"
+// @Failure     400  {object}  shareddto.ErrorResponse "Bad request"
 // @Router      /v1/artists/{id} [put]
 func (h *Handler) UpdateArtist(c *gin.Context) {
 	h.logger.Info("update an artist")
 
-	ctx, cancel := context.WithTimeout(c, sharedConfig.Timeout)
+	ctx, cancel := context.WithTimeout(c, sharedconfig.Timeout)
 	defer cancel()
 
 	id := c.Param("id")
 	artistId, err := strconv.Atoi(id)
 	if err != nil {
-		sharedUtils.RespondWithError(c, http.StatusBadRequest, "Invalid artist ID")
+		sharedutils.RespondWithError(c, http.StatusBadRequest, "Invalid artist ID")
 		return
 	}
 
 	var req dto.UpdateArtistDTO
-	sharedUtils.HandleBodyRequestData(c, &req)
+	sharedutils.HandleBodyRequestData(c, &req)
 
 	artist, err := h.service.UpdateArtist(ctx, artistId, req)
 	if err != nil {
-		sharedUtils.HandleError(c, err)
+		sharedutils.HandleError(c, err)
 		return
 	}
 
@@ -102,16 +102,16 @@ func (h *Handler) UpdateArtist(c *gin.Context) {
 // @Param       agencyId query int false "Agency ID" default()
 // @Param       isUserFollowed query bool false "Is User Followed" default(false)
 // @Success     200  {object}  dto.ArtistsResponseDTO "Artists response"
-// @Failure     400  {object}  sharedDTO.ErrorResponse "Bad request"
+// @Failure     400  {object}  shareddto.ErrorResponse "Bad request"
 // @Router      /v1/artists [get]
 func (h *Handler) GetArtists(c *gin.Context) {
 	h.logger.Info("get all artists")
 
-	ctx, cancel := context.WithTimeout(c, sharedConfig.Timeout)
+	ctx, cancel := context.WithTimeout(c, sharedconfig.Timeout)
 	defer cancel()
 
 	var req dto.ArtistsRequestDTO
-	err := sharedUtils.HandleQueryRequestData(c, &req)
+	err := sharedutils.HandleQueryRequestData(c, &req)
 	if err != nil {
 		return
 	}
@@ -124,12 +124,12 @@ func (h *Handler) GetArtists(c *gin.Context) {
 
 	artists, total, err := h.service.GetArtists(ctx, req)
 	if err != nil {
-		sharedUtils.HandleError(c, err)
+		sharedutils.HandleError(c, err)
 		return
 	}
 
 	response := dto.ArtistsResponseDTO{
-		PaginationResponse: sharedDTO.PaginationResponse{
+		PaginationResponse: shareddto.PaginationResponse{
 			Total: total,
 			Take:  req.Take,
 			Skip:  req.Skip,
@@ -147,25 +147,25 @@ func (h *Handler) GetArtists(c *gin.Context) {
 // @Produce     json
 // @Param       id path int true "Artist ID"
 // @Success     200  {object}  dto.SubscriptionResponseDTO "Subscription response"
-// @Failure     400  {object}  sharedDTO.ErrorResponse "Bad request"
+// @Failure     400  {object}  shareddto.ErrorResponse "Bad request"
 // @Router      /v1/artists/{id}/subscription [post]
 func (h *Handler) HandleSubscription(c *gin.Context) {
 	h.logger.Info("handle a subscription")
-	h.logger.Info(sharedDTO.ErrorResponse{})
+	h.logger.Info(shareddto.ErrorResponse{})
 
-	ctx, cancel := context.WithTimeout(c, sharedConfig.Timeout)
+	ctx, cancel := context.WithTimeout(c, sharedconfig.Timeout)
 	defer cancel()
 
 	id := c.Param("id")
 	artistId, err := strconv.Atoi(id)
 	if err != nil {
-		sharedUtils.RespondWithError(c, http.StatusBadRequest, "Invalid artist ID")
+		sharedutils.RespondWithError(c, http.StatusBadRequest, "Invalid artist ID")
 		return
 	}
 
 	isFollowed, err := h.service.HandleSubscription(ctx, artistId)
 	if err != nil {
-		sharedUtils.HandleError(c, err)
+		sharedutils.HandleError(c, err)
 		return
 	}
 

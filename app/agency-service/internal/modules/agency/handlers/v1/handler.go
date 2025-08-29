@@ -5,10 +5,10 @@ import (
 	"agency/internal/modules/agency"
 	"context"
 	"net/http"
-	sharedConfig "shared/pkg/config"
-	sharedDTO "shared/pkg/dto"
+	sharedconfig "shared/pkg/config"
+	shareddto "shared/pkg/dto"
 	"shared/pkg/logger"
-	sharedUtils "shared/pkg/utils"
+	sharedutils "shared/pkg/utils"
 	"strconv"
 
 	"github.com/gin-gonic/gin"
@@ -33,16 +33,16 @@ func NewHandler(service *agency.Service, logger *logger.Logger) *Handler {
 // @Param       skip query int false "Skip" default(0)
 // @Param       query query string false "Query" default()
 // @Success     200  {object}  dto.AgenciesResponseDTO "Agencies response"
-// @Failure     400  {object}  sharedDTO.ErrorResponse "Bad request"
+// @Failure     400  {object}  shareddto.ErrorResponse "Bad request"
 // @Router      /v1/agencies [get]
 func (h *Handler) GetAgencies(c *gin.Context) {
 	h.logger.Info("get all agencies")
 
-	ctx, cancel := context.WithTimeout(c, sharedConfig.Timeout)
+	ctx, cancel := context.WithTimeout(c, sharedconfig.Timeout)
 	defer cancel()
 
 	var req dto.AgenciesRequestDTO
-	err := sharedUtils.HandleQueryRequestData(c, &req)
+	err := sharedutils.HandleQueryRequestData(c, &req)
 	if err != nil {
 		return
 	}
@@ -55,12 +55,12 @@ func (h *Handler) GetAgencies(c *gin.Context) {
 
 	agencies, total, err := h.service.GetAgencies(ctx, req)
 	if err != nil {
-		sharedUtils.HandleError(c, err)
+		sharedutils.HandleError(c, err)
 		return
 	}
 
 	response := dto.AgenciesResponseDTO{
-		PaginationResponse: sharedDTO.PaginationResponse{
+		PaginationResponse: shareddto.PaginationResponse{
 			Total: total,
 			Take:  req.Take,
 			Skip:  req.Skip,
@@ -78,22 +78,22 @@ func (h *Handler) GetAgencies(c *gin.Context) {
 // @Produce     json
 // @Param       request body dto.CreateAgencyDTO true "Agency data"
 // @Success     201  {object}  dto.AgencyDTO "Agency response"
-// @Failure     400  {object}  sharedDTO.ErrorResponse "Bad request"
+// @Failure     400  {object}  shareddto.ErrorResponse "Bad request"
 // @Router      /v1/agencies [post]
 func (h *Handler) CreateAgency(c *gin.Context) {
 	h.logger.Info("create an agency")
 
-	ctx, cancel := context.WithTimeout(c, sharedConfig.Timeout)
+	ctx, cancel := context.WithTimeout(c, sharedconfig.Timeout)
 	defer cancel()
 
 	var req dto.CreateAgencyDTO
-	sharedUtils.HandleBodyRequestData(c, &req)
+	sharedutils.HandleBodyRequestData(c, &req)
 
-	sharedUtils.TrimStrings(&req)
+	sharedutils.TrimStrings(&req)
 
 	agency, err := h.service.CreateAgency(ctx, req)
 	if err != nil {
-		sharedUtils.HandleError(c, err)
+		sharedutils.HandleError(c, err)
 		return
 	}
 
@@ -109,29 +109,29 @@ func (h *Handler) CreateAgency(c *gin.Context) {
 // @Param       id path int true "Agency ID"
 // @Param       request body dto.UpdateAgencyDTO false "Agency data"
 // @Success     200  {object}  dto.AgencyDTO "Agency response"
-// @Failure     400  {object}  sharedDTO.ErrorResponse "Bad request"
+// @Failure     400  {object}  shareddto.ErrorResponse "Bad request"
 // @Router      /v1/agencies/{id} [put]
 func (h *Handler) UpdateAgency(c *gin.Context) {
 	h.logger.Info("update an agency")
 
-	ctx, cancel := context.WithTimeout(c, sharedConfig.Timeout)
+	ctx, cancel := context.WithTimeout(c, sharedconfig.Timeout)
 	defer cancel()
 
 	idStr := c.Param("id")
 	id, err := strconv.Atoi(idStr)
 	if err != nil {
-		sharedUtils.RespondWithError(c, http.StatusBadRequest, "Invalid agency ID")
+		sharedutils.RespondWithError(c, http.StatusBadRequest, "Invalid agency ID")
 		return
 	}
 
 	var req dto.UpdateAgencyDTO
-	sharedUtils.HandleBodyRequestData(c, &req)
+	sharedutils.HandleBodyRequestData(c, &req)
 
-	sharedUtils.TrimStrings(&req)
+	sharedutils.TrimStrings(&req)
 
 	agency, err := h.service.UpdateAgency(ctx, id, req)
 	if err != nil {
-		sharedUtils.HandleError(c, err)
+		sharedutils.HandleError(c, err)
 		return
 	}
 

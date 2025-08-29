@@ -8,9 +8,9 @@ RUN go install github.com/air-verse/air@latest
 
 ENV PATH="/go/bin:${PATH}"
 
-COPY ../card-service .
+COPY ../temp-service .
 
-WORKDIR /app/card-service
+WORKDIR /app/temp-service
 
 RUN go mod tidy
 

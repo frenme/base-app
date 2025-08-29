@@ -1,0 +1,33 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "title": "Temp service",
+        "contact": {},
+        "version": "1.0"
+    },
+    "basePath": "/api/temp-service",
+    "paths": {
+        "/v1/redis-cache": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Temp"
+                ],
+                "summary": "Handle redis cache and mongo db",
+                "responses": {}
+            }
+        }
+    },
+    "securityDefinitions": {
+        "Bearer": {
+            "type": "apiKey",
+            "name": "Authorization",
+            "in": "header"
+        }
+    }
+}

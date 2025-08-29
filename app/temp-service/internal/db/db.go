@@ -8,6 +8,7 @@ import (
 
 var PostgresDB db.Postgres
 var MongoDB db.Mongo
+var RedisDB db.Redis
 var log *logger.Logger
 
 func init() {
@@ -18,8 +19,10 @@ func InitConnections() {
 	PostgresDB = db.GetPostgresClient(
 		os.Getenv("POSTGRES_MASTER_CONNECTION"),
 		os.Getenv("POSTGRES_REPLICA_CONNECTION"),
-		"user-service",
+		"temp-service",
 	)
 
-	MongoDB = db.CreateMongoClient(os.Getenv("MONGO_CONNECTION"), "user-service")
+	MongoDB = db.CreateMongoClient(os.Getenv("MONGO_CONNECTION"), "temp-service")
+
+	RedisDB = db.CreateRedisClient(os.Getenv("REDIS_CLUSTER"), "temp-service")
 }

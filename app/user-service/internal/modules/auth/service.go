@@ -13,18 +13,18 @@ import (
 
 	"github.com/golang-jwt/jwt/v5"
 
-	sharedModels "shared/pkg/models"
+	"shared/pkg/models"
 )
 
 type Service struct {
-	repository *repository.Repository
-	jwtConfig  sharedModels.JWTConfig
+	repo      *repository.Repository
+	jwtConfig models.JWTConfig
 }
 
-func NewService(jwtConfig sharedModels.JWTConfig) *Service {
+func NewService(repo *repository.Repository, jwtConfig models.JWTConfig) *Service {
 	return &Service{
-		repository: repository.NewRepository(),
-		jwtConfig:  jwtConfig,
+		repo:      repo,
+		jwtConfig: jwtConfig,
 	}
 }
 
@@ -33,12 +33,12 @@ func (s *Service) Register(ctx context.Context, req dto.AuthRequestDTO) (*dto.To
 		return nil, ErrorInvalidPassword
 	}
 
-	user, _ := s.repository.GetUserByUsername(ctx, req.Username)
+	user, _ := s.repo.GetUserByUsername(ctx, req.Username)
 	if user != nil {
 		return nil, ErrorUserAlreadyExists
 	}
 
-	user, err := s.repository.CreateUser(ctx, req)
+	user, err := s.repo.CreateUser(ctx, req)
 	if err != nil {
 		return nil, err
 	}
@@ -48,7 +48,7 @@ func (s *Service) Register(ctx context.Context, req dto.AuthRequestDTO) (*dto.To
 }
 
 func (s *Service) Login(ctx context.Context, req dto.AuthRequestDTO) (*dto.TokenResponseDTO, error) {
-	user, err := s.repository.GetUserByUsername(ctx, req.Username)
+	user, err := s.repo.GetUserByUsername(ctx, req.Username)
 	if err != nil {
 		return nil, ErrorInvalidCredentials
 	}
@@ -111,7 +111,7 @@ func (s *Service) generateTokens(ctx context.Context, userID int, username strin
 		return nil, errors.New("error saving refresh token")
 	}
 
-	go s.repository.CleanupExpiredTokens()
+	go s.repo.CleanupExpiredTokens()
 
 	return &dto.TokenResponseDTO{
 		AccessToken:  accessTokenString,
@@ -120,10 +120,10 @@ func (s *Service) generateTokens(ctx context.Context, userID int, username strin
 	}, nil
 }
 
-func (s *Service) buildTokenClaims(userID int, username string) *sharedModels.TokenClaims {
+func (s *Service) buildTokenClaims(userID int, username string) *models.TokenClaims {
 	now := time.Now()
 
-	return &sharedModels.TokenClaims{
+	return &models.TokenClaims{
 		UserID:   userID,
 		Username: username,
 		RegisteredClaims: jwt.RegisteredClaims{

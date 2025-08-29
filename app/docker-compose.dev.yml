@@ -42,20 +42,20 @@ services:
     expose:
       - "${USER_SERVICE_PORT}"
 
-#  card-service:
-#    <<: *micro-service
-#    image: card-service:0.0.1-dev
-#    build:
-#      context: .
-#      dockerfile: card-service/Dockerfile.dev
-#      args:
-#        GOLANG_VERSION: ${GOLANG_VERSION}
-#    networks:
-#      app_shared_network:
-#        aliases:
-#          - card-service-golang
-#    expose:
-#      - "${CARD_SERVICE_PORT}"
+  temp-service:
+    <<: *micro-service
+    image: temp-service:0.0.1-dev
+    build:
+      context: .
+      dockerfile: temp-service/Dockerfile.dev
+      args:
+        GOLANG_VERSION: ${GOLANG_VERSION}
+    networks:
+      app_shared_network:
+        aliases:
+          - temp-service-golang
+    expose:
+      - "${TEMP_SERVICE_PORT}"
 
   shared-service:
     <<: *micro-service

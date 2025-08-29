@@ -1,0 +1,22 @@
+basePath: /api/temp-service
+info:
+  contact: {}
+  title: Temp service
+  version: "1.0"
+paths:
+  /v1/redis-cache:
+    get:
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      responses: {}
+      summary: Handle redis cache and mongo db
+      tags:
+      - Temp
+securityDefinitions:
+  Bearer:
+    in: header
+    name: Authorization
+    type: apiKey
+swagger: "2.0"

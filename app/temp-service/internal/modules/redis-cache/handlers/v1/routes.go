@@ -13,5 +13,5 @@ func NewRoutes(handler *Handler) *Routes {
 }
 
 func (r *Routes) RegisterRoutes(group *gin.RouterGroup) {
-	group.GET("/cards", r.handler.GetCards)
+	group.GET("/redis-cache", r.handler.HandleRedisCache)
 }

@@ -16,14 +16,3 @@ var JwtConfig = models.JWTConfig{
 	RefreshTokenTTL:     7 * 24 * time.Hour,
 	RefreshTokenCleanup: 24 * time.Hour,
 }
-
-func GetPostgresConfig() (masterDSN, replicaDSN string) {
-	masterDSN = os.Getenv("POSTGRES_MASTER_CONNECTION")
-	replicaDSN = os.Getenv("POSTGRES_REPLICA_CONNECTION")
-
-	if replicaDSN == "" {
-		replicaDSN = masterDSN
-	}
-
-	return masterDSN, replicaDSN
-}

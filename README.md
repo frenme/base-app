@@ -16,8 +16,8 @@ http://localhost:8000/api/user-service/swagger/index.html
 
 
 What else can be done:
-- Dev and Prod Separation
--- Deploy two separate databases (Dev and Prod) on the same DB instances
--- Work on subdomain configuration in Kong
-- Automatically restart services on failure (k8s)
-- Testing
+- **Dev and Prod Separation**
+    - Deploy two separate databases (Dev and Prod) on the same DB instances
+    - Work on subdomain configuration in Kong
+- **Automatically restart services on failure (k8s)**
+- **Testing**

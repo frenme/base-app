@@ -2,9 +2,9 @@ package repository
 
 import (
 	"context"
+	shareddb "shared/pkg/db"
 	"shared/pkg/models"
 	"time"
-	"user/internal/db"
 	"user/internal/dto"
 	"user/internal/repository/entity"
 	"user/internal/utils"
@@ -16,10 +16,12 @@ type RepositoryInterface interface {
 	GetUsers(ctx context.Context, req dto.UsersRequestDTO) ([]models.User, int64, error)
 }
 
-type Repository struct{}
+type Repository struct {
+	db shareddb.Postgres
+}
 
-func NewRepository() *Repository {
-	return &Repository{}
+func NewRepository(db shareddb.Postgres) *Repository {
+	return &Repository{db: db}
 }
 
 func (r *Repository) GetUsers(ctx context.Context, req dto.UsersRequestDTO) ([]models.User, int64, error) {
@@ -27,7 +29,7 @@ func (r *Repository) GetUsers(ctx context.Context, req dto.UsersRequestDTO) ([]m
 	var total int64
 
 	// todo: handle query parameter
-	query := db.PostgresDB.
+	query := r.db.
 		WithContext(ctx).
 		Limit(req.Take).
 		Offset(req.Skip)
@@ -52,7 +54,7 @@ func (r *Repository) CreateUser(ctx context.Context, req dto.AuthRequestDTO) (*m
 	}
 
 	userRecord := entity.UserEntity{Username: req.Username, Password: hashedPassword}
-	if err := db.PostgresDB.WithContext(ctx).Create(&userRecord).Error; err != nil {
+	if err := r.db.WithContext(ctx).Create(&userRecord).Error; err != nil {
 		return nil, err
 	}
 
@@ -62,7 +64,7 @@ func (r *Repository) CreateUser(ctx context.Context, req dto.AuthRequestDTO) (*m
 
 func (r *Repository) GetUserByID(ctx context.Context, id int) (*models.User, error) {
 	var record entity.UserEntity
-	if err := db.PostgresDB.WithContext(ctx).First(&record, id).Error; err != nil {
+	if err := r.db.WithContext(ctx).First(&record, id).Error; err != nil {
 		return nil, err
 	}
 	user := r.mapUser(record)
@@ -71,7 +73,7 @@ func (r *Repository) GetUserByID(ctx context.Context, id int) (*models.User, err
 
 func (r *Repository) GetUserByUsername(ctx context.Context, username string) (*models.User, error) {
 	var record entity.UserEntity
-	if err := db.PostgresDB.WithContext(ctx).Where("username = ?", username).First(&record).Error; err != nil {
+	if err := r.db.WithContext(ctx).Where("username = ?", username).First(&record).Error; err != nil {
 		return nil, err
 	}
 	user := r.mapUser(record)
@@ -80,7 +82,7 @@ func (r *Repository) GetUserByUsername(ctx context.Context, username string) (*m
 
 func (r *Repository) UpdateUser(ctx context.Context, id int, req dto.UpdateUserDTO) (*models.User, error) {
 	var userRecord entity.UserEntity
-	if err := db.PostgresDB.WithContext(ctx).First(&userRecord, id).Error; err != nil {
+	if err := r.db.WithContext(ctx).First(&userRecord, id).Error; err != nil {
 		return nil, err
 	}
 
@@ -98,7 +100,7 @@ func (r *Repository) UpdateUser(ctx context.Context, id int, req dto.UpdateUserD
 		updates["birth_date"] = *req.BirthDate
 	}
 
-	if err := db.PostgresDB.WithContext(ctx).Model(&userRecord).Updates(updates).Error; err != nil {
+	if err := r.db.WithContext(ctx).Model(&userRecord).Updates(updates).Error; err != nil {
 		return nil, err
 	}
 
@@ -107,7 +109,7 @@ func (r *Repository) UpdateUser(ctx context.Context, id int, req dto.UpdateUserD
 }
 
 func (r *Repository) CleanupExpiredTokens() {
-	db.PostgresDB.Where("expires_at < ?", time.Now()).Delete(&entity.TokenEntity{})
+	r.db.Where("expires_at < ?", time.Now()).Delete(&entity.TokenEntity{})
 }
 
 // mappers

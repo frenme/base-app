@@ -4,20 +4,19 @@ import (
 	_ "agency/docs"
 	"agency/internal/db"
 	"agency/internal/modules/agency"
-	agencyHandlers "agency/internal/modules/agency/handlers/v1"
-	artist "agency/internal/modules/artist"
-	artistHandlers "agency/internal/modules/artist/handlers/v1"
+	agencyhandlers "agency/internal/modules/agency/handlers/v1"
+	"agency/internal/modules/artist"
+	artisthandlers "agency/internal/modules/artist/handlers/v1"
 	"agency/internal/repository"
-	"agency/internal/utils"
 	"os"
 	"shared/pkg/logger"
 	"shared/pkg/middleware"
 
-	sharedConfig "shared/pkg/config"
+	sharedconfig "shared/pkg/config"
 
 	"github.com/gin-gonic/gin"
-	swaggerFiles "github.com/swaggo/files"
-	ginSwagger "github.com/swaggo/gin-swagger"
+	swaggerfiles "github.com/swaggo/files"
+	ginswagger "github.com/swaggo/gin-swagger"
 )
 
 // @title Agency service
@@ -31,24 +30,24 @@ func main() {
 
 	gin.SetMode(gin.ReleaseMode)
 	router := gin.Default()
-	router.GET(utils.APIBasePath+"/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
+	router.GET(os.Getenv("AGENCY_SERVICE_PATH")+"/swagger/*any", ginswagger.WrapHandler(swaggerfiles.Handler))
 
 	logger := logger.New()
 
-	authMiddleware := middleware.AuthMiddleware(sharedConfig.JwtConfig.SecretKey)
+	authMiddleware := middleware.AuthMiddleware(sharedconfig.JwtConfig.SecretKey)
 	reqIDMiddleware := middleware.RequestIDMiddleware()
 
 	repository := repository.NewRepository(db.PostgresDB)
 
 	artistService := artist.NewService(repository)
-	artistHandler := artistHandlers.NewHandler(artistService, logger)
-	artistRoutes := artistHandlers.NewRoutes(artistHandler)
+	artistHandler := artisthandlers.NewHandler(artistService, logger)
+	artistRoutes := artisthandlers.NewRoutes(artistHandler)
 
 	agencyService := agency.NewService(repository)
-	agencyHandler := agencyHandlers.NewHandler(agencyService, logger)
-	agencyRoutes := agencyHandlers.NewRoutes(agencyHandler)
+	agencyHandler := agencyhandlers.NewHandler(agencyService, logger)
+	agencyRoutes := agencyhandlers.NewRoutes(agencyHandler)
 
-	groupV1 := router.Group(utils.APIBasePath + "/v1")
+	groupV1 := router.Group(os.Getenv("AGENCY_SERVICE_PATH") + "/v1")
 	{
 		protectedGroup := groupV1.Group("")
 		protectedGroup.Use(authMiddleware)

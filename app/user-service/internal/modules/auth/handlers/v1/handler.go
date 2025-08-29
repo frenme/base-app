@@ -5,10 +5,10 @@ import (
 	"net/http"
 	"user/internal/modules/auth"
 
-	sharedConfig "shared/pkg/config"
-	sharedDTO "shared/pkg/dto"
+	sharedconfig "shared/pkg/config"
+	shareddto "shared/pkg/dto"
 	"shared/pkg/logger"
-	sharedUtils "shared/pkg/utils"
+	sharedutils "shared/pkg/utils"
 	"user/internal/dto"
 
 	"github.com/gin-gonic/gin"
@@ -30,18 +30,18 @@ func NewHandler(service *auth.Service, logger *logger.Logger) *Handler {
 // @Produce     json
 // @Param       request body dto.AuthRequestDTO true "Registration data"
 // @Success     200 {object} dto.TokenResponseDTO "Access tokens"
-// @Failure     400 {object} sharedDTO.ErrorResponse "Bad request"
+// @Failure     400 {object} shareddto.ErrorResponse "Bad request"
 // @Router      /v1/auth/register [post]
 func (h *Handler) Register(c *gin.Context) {
 	h.logger.Info("register request")
-	h.logger.Info(sharedDTO.ErrorResponse{})
+	h.logger.Info(shareddto.ErrorResponse{})
 
-	ctx, cancel := context.WithTimeout(c, sharedConfig.Timeout)
+	ctx, cancel := context.WithTimeout(c, sharedconfig.Timeout)
 	defer cancel()
 
 	req := h.getRequestBody(c)
 	if req == nil {
-		sharedUtils.RespondWithError(c, http.StatusInternalServerError, "Server error")
+		sharedutils.RespondWithError(c, http.StatusInternalServerError, "Server error")
 		return
 	}
 
@@ -61,18 +61,18 @@ func (h *Handler) Register(c *gin.Context) {
 // @Produce     json
 // @Param       request body dto.AuthRequestDTO true "Login data"
 // @Success     200 {object} dto.TokenResponseDTO "Access tokens"
-// @Failure     400 {object} sharedDTO.ErrorResponse "Bad request"
-// @Failure     401 {object} sharedDTO.ErrorResponse "Invalid credentials"
+// @Failure     400 {object} shareddto.ErrorResponse "Bad request"
+// @Failure     401 {object} shareddto.ErrorResponse "Invalid credentials"
 // @Router      /v1/auth/login [post]
 func (h *Handler) Login(c *gin.Context) {
 	h.logger.Infof("login request")
 
-	ctx, cancel := context.WithTimeout(c, sharedConfig.Timeout)
+	ctx, cancel := context.WithTimeout(c, sharedconfig.Timeout)
 	defer cancel()
 
 	req := h.getRequestBody(c)
 	if req == nil {
-		sharedUtils.RespondWithError(c, http.StatusInternalServerError, "Server error")
+		sharedutils.RespondWithError(c, http.StatusInternalServerError, "Server error")
 		return
 	}
 
@@ -92,25 +92,25 @@ func (h *Handler) Login(c *gin.Context) {
 // @Produce     json
 // @Param       request body dto.RefreshTokenRequestDTO true "Refresh token"
 // @Success     200 {object} dto.TokenResponseDTO "New access tokens"
-// @Failure     400 {object} sharedDTO.ErrorResponse "Bad request"
-// @Failure     401 {object} sharedDTO.ErrorResponse "Invalid token"
+// @Failure     400 {object} shareddto.ErrorResponse "Bad request"
+// @Failure     401 {object} shareddto.ErrorResponse "Invalid token"
 // @Router      /v1/auth/refresh [post]
 func (h *Handler) RefreshToken(c *gin.Context) {
 	h.logger.Info("refresh token request")
 
-	ctx, cancel := context.WithTimeout(c, sharedConfig.Timeout)
+	ctx, cancel := context.WithTimeout(c, sharedconfig.Timeout)
 	defer cancel()
 
 	var req dto.RefreshTokenRequestDTO
-	sharedUtils.HandleBodyRequestData(c, &req)
+	sharedutils.HandleBodyRequestData(c, &req)
 
 	tokens, err := h.service.RefreshToken(ctx, req)
 	if err != nil {
 		if err == auth.ErrorInvalidRefreshToken {
-			sharedUtils.RespondWithError(c, http.StatusUnauthorized, err.Error())
+			sharedutils.RespondWithError(c, http.StatusUnauthorized, err.Error())
 			return
 		}
-		sharedUtils.RespondWithError(c, http.StatusInternalServerError, err.Error())
+		sharedutils.RespondWithError(c, http.StatusInternalServerError, err.Error())
 		return
 	}
 
@@ -119,18 +119,18 @@ func (h *Handler) RefreshToken(c *gin.Context) {
 
 func (h *Handler) getRequestBody(c *gin.Context) *dto.AuthRequestDTO {
 	var req dto.AuthRequestDTO
-	sharedUtils.HandleBodyRequestData(c, &req)
-	sharedUtils.TrimStrings(&req)
+	sharedutils.HandleBodyRequestData(c, &req)
+	sharedutils.TrimStrings(&req)
 	return &req
 }
 
 func (h *Handler) respondWithError(c *gin.Context, err error) {
 	switch err {
 	case auth.ErrorInvalidCredentials:
-		sharedUtils.RespondWithError(c, http.StatusUnauthorized, err.Error())
+		sharedutils.RespondWithError(c, http.StatusUnauthorized, err.Error())
 	case auth.ErrorInvalidPassword, auth.ErrorUserAlreadyExists:
-		sharedUtils.RespondWithError(c, http.StatusBadRequest, err.Error())
+		sharedutils.RespondWithError(c, http.StatusBadRequest, err.Error())
 	default:
-		sharedUtils.RespondWithError(c, http.StatusInternalServerError, err.Error())
+		sharedutils.RespondWithError(c, http.StatusInternalServerError, err.Error())
 	}
 }

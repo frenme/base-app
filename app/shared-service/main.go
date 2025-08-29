@@ -2,7 +2,7 @@ package main
 
 import (
 	"log/slog"
-	"shared/pkg/config"
+	"os"
 	"shared/pkg/db"
 	"shared/pkg/logger"
 	"time"
@@ -29,7 +29,11 @@ func makeMigration() {
 	var gormDB *gorm.DB
 	const attempts = 100
 	for i := 1; i <= attempts; i++ {
-		gormDB = db.CreatePostgresClient(config.GetPostgresConfig())
+		gormDB = db.GetPostgresClient(
+			os.Getenv("POSTGRES_MASTER_CONNECTION"),
+			os.Getenv("POSTGRES_REPLICA_CONNECTION"),
+			"shared-service",
+		)
 		if gormDB != nil {
 			sqlDB, err := gormDB.DB()
 			if err == nil && sqlDB.Ping() == nil {
