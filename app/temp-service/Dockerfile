@@ -4,7 +4,7 @@ FROM golang:${GOLANG_VERSION:-1.24} AS builder
 
 WORKDIR /app
 
-COPY ../temp-service .
+COPY . .
 
 WORKDIR /app/temp-service
 

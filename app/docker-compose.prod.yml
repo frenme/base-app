@@ -55,6 +55,19 @@ services:
     expose:
       - "${TEMP_SERVICE_PORT}"
 
+  shared-service:
+    <<: *micro-service
+    image: shared-service:1.0.0
+    build:
+      context: .
+      dockerfile: shared-service/Dockerfile.dev
+      args:
+        GOLANG_VERSION: ${GOLANG_VERSION}
+    networks:
+      app_shared_network:
+        aliases:
+          - shared-service-golang
+
 networks:
   app_shared_network:
     external: true

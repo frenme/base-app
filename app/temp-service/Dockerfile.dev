@@ -8,7 +8,7 @@ RUN go install github.com/air-verse/air@latest
 
 ENV PATH="/go/bin:${PATH}"
 
-COPY ../temp-service .
+COPY . .
 
 WORKDIR /app/temp-service
 
