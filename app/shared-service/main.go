@@ -27,11 +27,11 @@ func main() {
 
 func makeMigration() {
 	var gormDB *gorm.DB
-	const attempts = 100
-	for i := 1; i <= attempts; i++ {
+	const maxAttempts = 100
+	for attempt := range maxAttempts {
 		gormDB = db.GetPostgresClient(
 			os.Getenv("POSTGRES_MASTER_CONNECTION"),
-			os.Getenv("POSTGRES_REPLICA_CONNECTION"),
+			os.Getenv("POSTGRES_REPLICAS_CONNECTION"),
 			"shared-service",
 		)
 		if gormDB != nil {
@@ -40,9 +40,9 @@ func makeMigration() {
 				break
 			}
 		}
-		log.Info("Attempt to initialize connections: ", slog.Int("attempt", i))
+		log.Info("Attempt to initialize connections: ", slog.Int("attempt", attempt))
 		time.Sleep(2 * time.Second)
-		if i == attempts {
+		if attempt == maxAttempts {
 			log.Error("Failed to initialize PostgreSQL connection after maximum attempts")
 			return
 		}
@@ -62,7 +62,7 @@ func makeMigration() {
 	}
 
 	m, err := migrate.NewWithDatabaseInstance(
-		"file://migrations", "postgres", driver,
+		"file:///app/shared-service/migrations", "postgres", driver,
 	)
 	if err != nil {
 		log.Errorf("migrate.NewWithDatabaseInstance: %v", err)

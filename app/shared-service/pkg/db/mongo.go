@@ -24,10 +24,10 @@ func CreateMongoClient(connectionString string, serviceName string) *mongo.Clien
 	defer cancel()
 	client, err := mongo.Connect(ctx, clientOptions)
 	if err != nil {
-		log.Info("Connection to MongoDB is failed: ", err, "service", serviceName)
+		log.Info("Connection to MongoDB is failed: ", err, "service: ", serviceName)
 	}
 	if err = client.Ping(ctx, nil); err != nil {
-		log.Info("Connection to MongoDB is failed: ", err, "service", serviceName)
+		log.Info("Connection to MongoDB is failed: ", err, "service: ", serviceName)
 	}
 	return client
 }

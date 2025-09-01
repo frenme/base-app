@@ -1,6 +1,6 @@
 ARG GOLANG_VERSION
 
-FROM golang:${GOLANG_VERSION:-1.24} AS builder
+FROM golang:${GOLANG_VERSION:-1.24}-alpine AS builder
 
 WORKDIR /app
 

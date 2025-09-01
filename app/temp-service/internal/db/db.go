@@ -18,7 +18,7 @@ func init() {
 func InitConnections() {
 	PostgresDB = db.GetPostgresClient(
 		os.Getenv("POSTGRES_MASTER_CONNECTION"),
-		os.Getenv("POSTGRES_REPLICA_CONNECTION"),
+		os.Getenv("POSTGRES_REPLICAS_CONNECTION"),
 		"temp-service",
 	)
 

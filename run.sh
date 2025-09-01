@@ -18,7 +18,7 @@ for dir in "${dirs[@]}"; do
   if [ "$dir" == "app" ]; then
     # configure scale parameter (example)
     docker compose up -d \
-    --scale agency-service=1 \
+    --scale agency-service=0 \
     --scale user-service=1 \
     --scale temp-service=1
   elif [ "$dir" == "elk" ]; then

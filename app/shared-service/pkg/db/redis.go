@@ -16,11 +16,10 @@ func CreateRedisClient(connectionString string, serviceName string) *redis.Clust
 	log := logger.New()
 
 	redisNodes := strings.Split(connectionString, ",")
-	log.Info("Redis cluster nodes", redisNodes)
 
 	maxAttempts := 30
-	for attempt := 1; attempt <= maxAttempts; attempt++ {
-		log.Info("Attempting to connect to Redis cluster:", "attempt", attempt, "service", serviceName)
+	for attempt := range maxAttempts {
+		log.Info("Attempting to connect to Redis cluster: ", attempt, serviceName)
 
 		RedisDB = redis.NewClusterClient(&redis.ClusterOptions{
 			Addrs:       redisNodes,
@@ -33,15 +32,15 @@ func CreateRedisClient(connectionString string, serviceName string) *redis.Clust
 
 		ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 
-		pong, err := RedisDB.Ping(ctx).Result()
+		_, err := RedisDB.Ping(ctx).Result()
 		cancel()
 
 		if err == nil {
-			log.Info("Redis cluster is ready", "pong", pong, "service", serviceName)
+			log.Info("Redis cluster is ready ", "service: ", serviceName)
 			return RedisDB
 		}
 
-		log.Warn("Failed to ping Redis cluster", "error", err.Error(), "service", serviceName)
+		log.Warn("Failed to ping Redis cluster", "error: ", err.Error(), "service: ", serviceName)
 		RedisDB.Close()
 		RedisDB = nil
 
@@ -50,6 +49,6 @@ func CreateRedisClient(connectionString string, serviceName string) *redis.Clust
 		}
 	}
 
-	log.Error("Failed to connect to Redis cluster after all attempts", "service", serviceName)
+	log.Error("Failed to connect to Redis cluster after all attempts", "service: ", serviceName)
 	return nil
 }
