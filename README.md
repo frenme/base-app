@@ -13,11 +13,3 @@ mkcert localhost 127.0.0.1 ::1
 7) Check
 https://localhost:8443/api/user-service/swagger/index.html
 http://localhost:8000/api/user-service/swagger/index.html
-
-
-What else can be done:
-- **Dev and Prod Separation**
-    - Deploy two separate databases (Dev and Prod) on the same DB instances
-    - Work on subdomain configuration in Kong
-- **Automatically restart services on failure (k8s)**
-- **Testing**
