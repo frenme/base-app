@@ -23,44 +23,37 @@ func NewService(repo *repository.Repository) *Service {
 	return &Service{repo: repo}
 }
 
-func (s *Service) GetCards(ctx context.Context) (*PerformanceResult, error) {
-	err := s.repo.SetDataMongo(ctx)
-	if err != nil {
+func (s *Service) TestCachePerformance(ctx context.Context) (*PerformanceResult, error) {
+	if err := s.repo.SetDataMongo(ctx); err != nil {
 		return nil, err
 	}
 
-	start := time.Now()
+	mongoStart := time.Now()
 	mongoResults, err := s.repo.GetAllDataMongo(ctx)
 	if err != nil {
 		return nil, err
 	}
-	mongoDuration := time.Since(start)
+	mongoDuration := time.Since(mongoStart)
 
-	redisData, err := s.repo.GetDataRedis(ctx)
-	var redisDuration time.Duration
-
-	if errors.Is(err, redis.Nil) {
-		err = s.repo.SetDataRedis(ctx, mongoResults)
-		if err != nil {
+	// ensure key exists (warm cache)
+	if _, err := s.repo.GetDataRedis(ctx); errors.Is(err, redis.Nil) {
+		if err := s.repo.SetDataRedis(ctx, mongoResults); err != nil {
 			return nil, err
 		}
-
-		start = time.Now()
-		_, err = s.repo.GetDataRedis(ctx)
-		if err != nil {
-			return nil, err
-		}
-		redisDuration = time.Since(start)
 	} else if err != nil {
 		return nil, err
-	} else {
-		start = time.Now()
-		var cachedResults []map[string]interface{}
-		err = json.Unmarshal([]byte(redisData), &cachedResults)
-		if err != nil {
-			return nil, err
-		}
-		redisDuration = time.Since(start)
+	}
+
+	// measure only redis read (without json unmarshal)
+	redisStart := time.Now()
+	redisData, err := s.repo.GetDataRedis(ctx)
+	if err != nil {
+		return nil, err
+	}
+	redisDuration := time.Since(redisStart)
+	var cachedResults []map[string]interface{}
+	if err := json.Unmarshal([]byte(redisData), &cachedResults); err != nil {
+		return nil, err
 	}
 
 	return &PerformanceResult{

@@ -2,6 +2,7 @@
 
 # dev or prod
 dirs=("app" "kong" "postgres" "redis" "mongo")
+# dirs=("app" "kong" "postgres" "redis" "mongo")
 # dirs=("app" "kong" "kafka" "redis" "mongo" "postgres")
 
 # make files runnable

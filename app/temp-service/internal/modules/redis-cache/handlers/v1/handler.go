@@ -32,7 +32,7 @@ func (h *Handler) HandleRedisCache(c *gin.Context) {
 	ctx, cancel := context.WithTimeout(c, sharedconfig.Timeout)
 	defer cancel()
 
-	result, err := h.service.GetCards(ctx)
+	result, err := h.service.TestCachePerformance(ctx)
 	if err != nil {
 		sharedutils.HandleError(c, err)
 		return

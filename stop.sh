@@ -6,7 +6,7 @@ for dir in "${dirs[@]}"; do
   echo "Stopping service: $dir..."
   cd "$dir" || exit 1
 
-  docker compose down -v
+  docker compose down
 
   cd ..
 done
