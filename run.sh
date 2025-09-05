@@ -1,8 +1,7 @@
 #!/bin/bash
 
 # dev or prod
-dirs=("app" "kong" "postgres" "redis" "mongo")
-# dirs=("app" "kong" "postgres" "redis" "mongo")
+dirs=("app" "kong" "postgres" "kafka")
 # dirs=("app" "kong" "kafka" "redis" "mongo" "postgres")
 
 # make files runnable
@@ -19,8 +18,7 @@ for dir in "${dirs[@]}"; do
   if [ "$dir" == "app" ]; then
     # configure scale parameter (example)
     docker compose up -d \
-    --scale agency-service=0 \
-    --scale user-service=1 \
+    --scale user-service=0 \
     --scale temp-service=1
   elif [ "$dir" == "elk" ]; then
     docker compose up setup

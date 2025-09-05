@@ -40,3 +40,20 @@ func (h *Handler) HandleRedisCache(c *gin.Context) {
 
 	c.JSON(http.StatusOK, result)
 }
+
+// HandleKafkaMessage
+// @Summary     Handle kafka message
+// @Tags        Temp
+// @Accept      json
+// @Produce     json
+// @Router      /v1/kafka-message [get]
+func (h *Handler) HandleKafkaMessage(c *gin.Context) {
+	h.logger.Info("send message to kafka")
+
+	ctx, cancel := context.WithTimeout(c, sharedconfig.Timeout)
+	defer cancel()
+
+	h.service.TestKafkaProducer(ctx)
+
+	c.JSON(http.StatusOK, "Message sent to Kafka")
+}

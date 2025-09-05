@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"os"
 	"shared/pkg/logger"
 	"shared/pkg/middleware"
@@ -23,6 +24,8 @@ import (
 // @name Authorization
 func main() {
 	db.InitConnections()
+
+	db.StartKafkaConsumers(context.Background())
 
 	gin.SetMode(gin.ReleaseMode)
 	router := gin.Default()

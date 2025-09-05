@@ -4,6 +4,8 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
+	"fmt"
+	"temp/internal/db"
 	"temp/internal/repository"
 	"time"
 
@@ -60,4 +62,10 @@ func (s *Service) TestCachePerformance(ctx context.Context) (*PerformanceResult,
 		MongoDuration: mongoDuration,
 		RedisDuration: redisDuration,
 	}, nil
+}
+
+func (s *Service) TestKafkaProducer(ctx context.Context) {
+	if err := db.KafkaPublisher.Write(ctx, "example-topic", []byte("test"), []byte("test")); err != nil {
+		fmt.Println("Kafka producer error: ", err)
+	}
 }

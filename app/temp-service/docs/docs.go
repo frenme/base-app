@@ -15,6 +15,21 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
+        "/v1/kafka-message": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Temp"
+                ],
+                "summary": "Handle kafka message",
+                "responses": {}
+            }
+        },
         "/v1/redis-cache": {
             "get": {
                 "consumes": [

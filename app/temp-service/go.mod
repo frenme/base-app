@@ -9,6 +9,7 @@ require (
 	github.com/swaggo/gin-swagger v1.6.0
 	github.com/swaggo/swag v1.16.4
 	go.mongodb.org/mongo-driver v1.17.3
+	github.com/segmentio/kafka-go v0.4.49
 )
 
 require (

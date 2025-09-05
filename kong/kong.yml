@@ -10,16 +10,8 @@ services:
         paths:
           - /api/user-service
 
-  - name: agency-service-golang
-    url: http://agency-service-golang:8082
-    routes:
-      - name: agency-routes
-        strip_path: false
-        paths:
-          - /api/agency-service
-
   - name: temp-service-golang
-    url: http://temp-service-golang:8083
+    url: http://temp-service-golang:8082
     routes:
       - name: temp-routes
         strip_path: false

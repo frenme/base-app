@@ -1,8 +1,7 @@
 go 1.24.0
 
 use (
-	./temp-service
-	./agency-service
 	./user-service
+	./temp-service
 	./shared-service
 )
