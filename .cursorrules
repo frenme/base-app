@@ -1,0 +1,8 @@
+rules:
+  - match: "*"
+    ai_commit:
+      prompt: |
+        Generate commit messages following the Conventional Commits specification. 
+        Use types like feat, fix, docs, style, refactor, test, chore. 
+        Format: <type>(<scope>): <description>. 
+        Keep the message concise and in English.
