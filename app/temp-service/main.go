@@ -7,6 +7,7 @@ import (
 	"shared/pkg/middleware"
 	_ "temp/docs"
 	"temp/internal/db"
+    grpcserver "temp/internal/grpcserver"
 	rediscache "temp/internal/modules/redis-cache"
 	handlers "temp/internal/modules/redis-cache/handlers/v1"
 	"temp/internal/repository"
@@ -27,11 +28,15 @@ func main() {
 
 	db.StartKafkaConsumers(context.Background())
 
+    // start grpc server (health + reflection)
+    log := logger.New()
+    grpcserver.StartGRPCServer(context.Background(), log)
+
 	gin.SetMode(gin.ReleaseMode)
 	router := gin.Default()
 	router.GET(os.Getenv("TEMP_SERVICE_PATH")+"/swagger/*any", ginswagger.WrapHandler(swaggerfiles.Handler))
 
-	logger := logger.New()
+    logger := logger.New()
 
 	reqIDMiddleware := middleware.RequestIDMiddleware()
 

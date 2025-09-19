@@ -14,4 +14,6 @@ WORKDIR /app/temp-service
 
 RUN go mod tidy
 
+EXPOSE 50051
+
 CMD ["air"]

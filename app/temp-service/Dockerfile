@@ -16,4 +16,6 @@ WORKDIR /root/
 
 COPY --from=builder /app/temp-service/temp-service .
 
+EXPOSE 50051
+
 CMD ["./temp-service"]
