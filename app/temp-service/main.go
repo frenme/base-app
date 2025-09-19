@@ -9,7 +9,7 @@ import (
 	"shared/pkg/middleware"
 	_ "temp/docs"
 	"temp/internal/db"
-	echoimpl "temp/internal/echo"
+	echoimpl "temp/internal/modules/grps-echo/handlers/v1"
 	rediscache "temp/internal/modules/redis-cache"
 	handlers "temp/internal/modules/redis-cache/handlers/v1"
 	"temp/internal/repository"
@@ -46,12 +46,17 @@ func main() {
 	handler := handlers.NewHandler(service, logger)
 	routes := handlers.NewRoutes(handler)
 
+	// grps-echo http routes
+	grpcEchoHandler := echoimpl.NewHandler(service, logger)
+	grpcEchoRoutes := echoimpl.NewRoutes(grpcEchoHandler)
+
 	groupV1 := router.Group(os.Getenv("TEMP_SERVICE_PATH") + "/v1")
 	{
 		protectedGroup := groupV1.Group("")
 		protectedGroup.Use(reqIDMiddleware)
 		{
 			routes.RegisterRoutes(protectedGroup)
+			grpcEchoRoutes.RegisterRoutes(protectedGroup)
 		}
 	}
 

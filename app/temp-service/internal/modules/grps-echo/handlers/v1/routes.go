@@ -13,6 +13,5 @@ func NewRoutes(handler *Handler) *Routes {
 }
 
 func (r *Routes) RegisterRoutes(group *gin.RouterGroup) {
-	group.GET("/redis-cache", r.handler.HandleRedisCache)
-	group.GET("/kafka-message", r.handler.HandleKafkaMessage)
+	group.GET("/echo-user", r.handler.EchoUser)
 }
