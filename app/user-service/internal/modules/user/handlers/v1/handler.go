@@ -5,21 +5,14 @@ import (
 	"net/http"
 	sharedconfig "shared/pkg/config"
 	shareddto "shared/pkg/dto"
-	echopb "shared/pkg/grps/proto/echo"
 	"shared/pkg/logger"
 	sharedutils "shared/pkg/utils"
 	"strconv"
-	"time"
 	"user/internal/dto"
 	"user/internal/modules/user"
 	"user/internal/utils"
 
-	"os"
-
 	"github.com/gin-gonic/gin"
-	"google.golang.org/grpc"
-	"google.golang.org/grpc/credentials/insecure"
-	healthpb "google.golang.org/grpc/health/grpc_health_v1"
 )
 
 type Handler struct {
@@ -140,80 +133,4 @@ func (h *Handler) UpdateUser(c *gin.Context) {
 	response := utils.MapUserDTO(user)
 	h.logger.Info(response)
 	c.JSON(http.StatusOK, response)
-}
-
-// PingTemp проверяет health temp-service через gRPC
-// @Summary     Ping temp-service via gRPC Health
-// @Tags        Users
-// @Produce     json
-// @Success     200  {object}  map[string]string
-// @Router      /v1/ping-temp [get]
-func (h *Handler) PingTemp(c *gin.Context) {
-	addr := os.Getenv("TEMP_SERVICE_GRPC_ADDR")
-	if addr == "" {
-		addr = "temp-service-golang:50051"
-	}
-
-	ctx, cancel := context.WithTimeout(c, 2*time.Second)
-	defer cancel()
-
-	conn, err := grpc.DialContext(ctx, addr,
-		grpc.WithTransportCredentials(insecure.NewCredentials()),
-		grpc.WithBlock(),
-	)
-	if err != nil {
-		sharedutils.RespondWithError(c, http.StatusBadGateway, "grpc dial error: "+err.Error())
-		return
-	}
-	defer conn.Close()
-
-	client := healthpb.NewHealthClient(conn)
-	resp, err := client.Check(ctx, &healthpb.HealthCheckRequest{})
-	if err != nil {
-		sharedutils.RespondWithError(c, http.StatusBadGateway, "grpc call error: "+err.Error())
-		return
-	}
-
-	c.JSON(http.StatusOK, map[string]string{"status": resp.GetStatus().String()})
-}
-
-// EchoTemp вызывает Echo у temp-service и проксирует ответ
-// @Summary     Echo from temp-service via gRPC
-// @Tags        Users
-// @Produce     json
-// @Param       message query string false "message" default(hi)
-// @Success     200  {object}  map[string]string
-// @Router      /v1/echo-temp [get]
-func (h *Handler) EchoTemp(c *gin.Context) {
-	addr := os.Getenv("TEMP_SERVICE_GRPC_ADDR")
-	if addr == "" {
-		addr = "temp-service-golang:50051"
-	}
-
-	msg := c.Query("message")
-	if msg == "" {
-		msg = "hi"
-	}
-
-	ctx, cancel := context.WithTimeout(c, 2*time.Second)
-	defer cancel()
-
-	conn, err := grpc.DialContext(ctx, addr,
-		grpc.WithTransportCredentials(insecure.NewCredentials()),
-		grpc.WithBlock(),
-	)
-	if err != nil {
-		sharedutils.RespondWithError(c, http.StatusBadGateway, "grpc dial error: "+err.Error())
-		return
-	}
-	defer conn.Close()
-
-	client := echopb.NewEchoServiceClient(conn)
-	resp, err := client.Echo(ctx, &echopb.EchoRequest{Message: msg})
-	if err != nil {
-		sharedutils.RespondWithError(c, http.StatusBadGateway, "grpc call error: "+err.Error())
-		return
-	}
-
-	c.JSON(http.StatusOK, map[string]string{"message": resp.GetMessage()})
 }

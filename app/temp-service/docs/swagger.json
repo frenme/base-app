@@ -7,6 +7,37 @@
     },
     "basePath": "/api/temp-service",
     "paths": {
+        "/v1/echo-user": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Temp"
+                ],
+                "summary": "Call user-service Echo via gRPC",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "default": "hi",
+                        "description": "message",
+                        "name": "message",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/v1/kafka-message": {
             "get": {
                 "consumes": [

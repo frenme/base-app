@@ -177,40 +177,6 @@ paths:
       summary: Registration
       tags:
       - Auth
-  /v1/echo-temp:
-    get:
-      parameters:
-      - default: hi
-        description: message
-        in: query
-        name: message
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            additionalProperties:
-              type: string
-            type: object
-      summary: Echo from temp-service via gRPC
-      tags:
-      - Users
-  /v1/ping-temp:
-    get:
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            additionalProperties:
-              type: string
-            type: object
-      summary: Ping temp-service via gRPC Health
-      tags:
-      - Users
   /v1/users:
     get:
       consumes:

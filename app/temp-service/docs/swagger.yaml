@@ -4,6 +4,26 @@ info:
   title: Temp service
   version: "1.0"
 paths:
+  /v1/echo-user:
+    get:
+      parameters:
+      - default: hi
+        description: message
+        in: query
+        name: message
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Call user-service Echo via gRPC
+      tags:
+      - Temp
   /v1/kafka-message:
     get:
       consumes:

@@ -144,59 +144,6 @@ const docTemplate = `{
                 }
             }
         },
-        "/v1/echo-temp": {
-            "get": {
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Users"
-                ],
-                "summary": "Echo from temp-service via gRPC",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "default": "hi",
-                        "description": "message",
-                        "name": "message",
-                        "in": "query"
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "type": "object",
-                            "additionalProperties": {
-                                "type": "string"
-                            }
-                        }
-                    }
-                }
-            }
-        },
-        "/v1/ping-temp": {
-            "get": {
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Users"
-                ],
-                "summary": "Ping temp-service via gRPC Health",
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "type": "object",
-                            "additionalProperties": {
-                                "type": "string"
-                            }
-                        }
-                    }
-                }
-            }
-        },
         "/v1/users": {
             "get": {
                 "security": [
