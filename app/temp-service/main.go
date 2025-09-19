@@ -24,23 +24,15 @@ import (
 // @in header
 // @name Authorization
 func main() {
+	logger := logger.New()
+
 	db.InitConnections()
-
 	db.StartKafkaConsumers(context.Background())
-
-	// start grpc server (health + reflection)
-	log := logger.New()
-	grpcPort := os.Getenv("TEMP_SERVICE_GRPC_PORT")
-	if grpcPort == "" {
-		grpcPort = "50051"
-	}
-	grpcserver.Start(context.Background(), log, ":"+grpcPort)
+	grpcserver.Start(context.Background(), logger, ":"+os.Getenv("GRPC_PORT"))
 
 	gin.SetMode(gin.ReleaseMode)
 	router := gin.Default()
 	router.GET(os.Getenv("TEMP_SERVICE_PATH")+"/swagger/*any", ginswagger.WrapHandler(swaggerfiles.Handler))
-
-	logger := logger.New()
 
 	reqIDMiddleware := middleware.RequestIDMiddleware()
 

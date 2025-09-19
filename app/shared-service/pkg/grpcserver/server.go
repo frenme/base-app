@@ -14,7 +14,6 @@ import (
 	"google.golang.org/grpc/reflection"
 )
 
-// Start запускает gRPC-сервер на указанном адресе (например, ":50051") в отдельной горутине
 func Start(ctx context.Context, log *logger.Logger, listenAddress string) {
 	go func() {
 		lis, err := net.Listen("tcp", listenAddress)
@@ -29,11 +28,9 @@ func Start(ctx context.Context, log *logger.Logger, listenAddress string) {
 
 		srv := grpc.NewServer()
 
-		// health-checks
 		hs := health.NewServer()
 		healthpb.RegisterHealthServer(srv, hs)
 
-		// reflection для дебага
 		reflection.Register(srv)
 
 		if log != nil {

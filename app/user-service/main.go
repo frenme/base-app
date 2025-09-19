@@ -28,21 +28,14 @@ import (
 // @in header
 // @name Authorization
 func main() {
-	db.InitConnections()
+	logger := logger.New()
 
-	// start grpc server (health + reflection)
-	log := logger.New()
-	grpcPort := os.Getenv("USER_SERVICE_GRPC_PORT")
-	if grpcPort == "" {
-		grpcPort = "50051"
-	}
-	grpcserver.Start(context.Background(), log, ":"+grpcPort)
+	db.InitConnections()
+	grpcserver.Start(context.Background(), logger, ":"+os.Getenv("GRPC_PORT"))
 
 	gin.SetMode(gin.ReleaseMode)
 	router := gin.Default()
 	router.GET(os.Getenv("USER_SERVICE_PATH")+"/swagger/*any", ginswagger.WrapHandler(swaggerfiles.Handler))
-
-	logger := logger.New()
 
 	authMiddleware := middleware.AuthMiddleware(sharedconfig.JwtConfig.SecretKey)
 	reqIDMiddleware := middleware.RequestIDMiddleware()

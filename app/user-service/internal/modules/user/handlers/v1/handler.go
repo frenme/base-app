@@ -1,3 +1,4 @@
+// Package v1 содержит http-обработчики для user-модуля
 package v1
 
 import (
@@ -8,11 +9,16 @@ import (
 	"shared/pkg/logger"
 	sharedutils "shared/pkg/utils"
 	"strconv"
+	"time"
 	"user/internal/dto"
 	"user/internal/modules/user"
 	"user/internal/utils"
 
 	"github.com/gin-gonic/gin"
+	"google.golang.org/grpc"
+	"google.golang.org/grpc/credentials/insecure"
+	healthpb "google.golang.org/grpc/health/grpc_health_v1"
+	"os"
 )
 
 type Handler struct {
@@ -24,7 +30,7 @@ func NewHandler(service *user.Service, logger *logger.Logger) *Handler {
 	return &Handler{service: service, logger: logger}
 }
 
-// GetUsers
+// GetUsers возвращает список пользователей
 // @Summary     Get users
 // @Tags        Users
 // @Security    Bearer
@@ -71,7 +77,7 @@ func (h *Handler) GetUsers(c *gin.Context) {
 	c.JSON(http.StatusOK, response)
 }
 
-// GetCurrentUser
+// GetCurrentUser возвращает текущего пользователя
 // @Summary     Get current user
 // @Tags        Users
 // @Security    Bearer
@@ -95,7 +101,7 @@ func (h *Handler) GetCurrentUser(c *gin.Context) {
 	c.JSON(http.StatusOK, utils.MapUserDTO(user))
 }
 
-// UpdateUser
+// UpdateUser обновляет пользователя
 // @Summary     Update a user
 // @Tags        Users
 // @Security    Bearer
@@ -113,7 +119,7 @@ func (h *Handler) UpdateUser(c *gin.Context) {
 	defer cancel()
 
 	id := c.Param("id")
-	userId, err := strconv.Atoi(id)
+    userID, err := strconv.Atoi(id)
 	if err != nil {
 		sharedutils.RespondWithError(c, http.StatusBadRequest, "Invalid user ID")
 		return
@@ -124,7 +130,7 @@ func (h *Handler) UpdateUser(c *gin.Context) {
 
 	sharedutils.TrimStrings(&req)
 
-	user, err := h.service.UpdateUser(ctx, userId, req)
+    user, err := h.service.UpdateUser(ctx, userID, req)
 	if err != nil {
 		sharedutils.HandleError(c, err)
 		return
@@ -133,4 +139,39 @@ func (h *Handler) UpdateUser(c *gin.Context) {
 	response := utils.MapUserDTO(user)
 	h.logger.Info(response)
 	c.JSON(http.StatusOK, response)
+}
+
+// PingTemp проверяет health temp-service через gRPC
+// @Summary     Ping temp-service via gRPC Health
+// @Tags        Users
+// @Produce     json
+// @Success     200  {object}  map[string]string
+// @Router      /v1/ping-temp [get]
+func (h *Handler) PingTemp(c *gin.Context) {
+	addr := os.Getenv("TEMP_SERVICE_GRPC_ADDR")
+	if addr == "" {
+		addr = "temp-service-golang:50051"
+	}
+
+	ctx, cancel := context.WithTimeout(c, 2*time.Second)
+	defer cancel()
+
+	conn, err := grpc.DialContext(ctx, addr,
+		grpc.WithTransportCredentials(insecure.NewCredentials()),
+		grpc.WithBlock(),
+	)
+	if err != nil {
+		sharedutils.RespondWithError(c, http.StatusBadGateway, "grpc dial error: "+err.Error())
+		return
+	}
+	defer conn.Close()
+
+	client := healthpb.NewHealthClient(conn)
+	resp, err := client.Check(ctx, &healthpb.HealthCheckRequest{})
+	if err != nil {
+		sharedutils.RespondWithError(c, http.StatusBadGateway, "grpc call error: "+err.Error())
+		return
+	}
+
+	c.JSON(http.StatusOK, map[string]string{"status": resp.GetStatus().String()})
 }
