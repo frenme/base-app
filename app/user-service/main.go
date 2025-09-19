@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"os"
 	"shared/pkg/middleware"
 	_ "user/docs"
@@ -8,6 +9,7 @@ import (
 	"user/internal/repository"
 
 	sharedconfig "shared/pkg/config"
+	grpcserver "shared/pkg/grpcserver"
 	"shared/pkg/logger"
 	auth "user/internal/modules/auth"
 	authhandlers "user/internal/modules/auth/handlers/v1"
@@ -27,6 +29,14 @@ import (
 // @name Authorization
 func main() {
 	db.InitConnections()
+
+	// start grpc server (health + reflection)
+	log := logger.New()
+	grpcPort := os.Getenv("USER_SERVICE_GRPC_PORT")
+	if grpcPort == "" {
+		grpcPort = "50051"
+	}
+	grpcserver.Start(context.Background(), log, ":"+grpcPort)
 
 	gin.SetMode(gin.ReleaseMode)
 	router := gin.Default()

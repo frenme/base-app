@@ -4,7 +4,6 @@ import (
 	"context"
 	"fmt"
 	"net"
-	"os"
 	"time"
 
 	"shared/pkg/logger"
@@ -15,19 +14,10 @@ import (
 	"google.golang.org/grpc/reflection"
 )
 
-func getPort() string {
-	port := os.Getenv("TEMP_SERVICE_GRPC_PORT")
-	if port == "" {
-		port = "50051"
-	}
-	return port
-}
-
-// StartGRPCServer запускает gRPC-сервер неблокирующе (в горутине)
-func StartGRPCServer(ctx context.Context, log *logger.Logger) {
+// Start запускает gRPC-сервер на указанном адресе (например, ":50051") в отдельной горутине
+func Start(ctx context.Context, log *logger.Logger, listenAddress string) {
 	go func() {
-		addr := ":" + getPort()
-		lis, err := net.Listen("tcp", addr)
+		lis, err := net.Listen("tcp", listenAddress)
 		if err != nil {
 			if log != nil {
 				log.WithError(err).Error("grpc: failed to listen")
@@ -47,9 +37,9 @@ func StartGRPCServer(ctx context.Context, log *logger.Logger) {
 		reflection.Register(srv)
 
 		if log != nil {
-			log.WithField("addr", addr).Info("grpc: server starting")
+			log.WithField("addr", listenAddress).Info("grpc: server starting")
 		} else {
-			fmt.Println("grpc: server starting on", addr)
+			fmt.Println("grpc: server starting on", listenAddress)
 		}
 
 		// graceful shutdown
@@ -77,5 +67,3 @@ func StartGRPCServer(ctx context.Context, log *logger.Logger) {
 		}
 	}()
 }
-
-

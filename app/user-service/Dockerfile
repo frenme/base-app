@@ -16,4 +16,6 @@ WORKDIR /root/
 
 COPY --from=builder /app/user-service/user-service .
 
+EXPOSE 50051
+
 CMD ["./user-service"]
