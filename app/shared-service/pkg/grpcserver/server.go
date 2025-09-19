@@ -14,7 +14,7 @@ import (
 	"google.golang.org/grpc/reflection"
 )
 
-func Start(ctx context.Context, log *logger.Logger, listenAddress string) {
+func Start(ctx context.Context, log *logger.Logger, listenAddress string, register func(*grpc.Server)) {
 	go func() {
 		lis, err := net.Listen("tcp", listenAddress)
 		if err != nil {
@@ -32,6 +32,10 @@ func Start(ctx context.Context, log *logger.Logger, listenAddress string) {
 		healthpb.RegisterHealthServer(srv, hs)
 
 		reflection.Register(srv)
+
+		if register != nil {
+			register(srv)
+		}
 
 		if log != nil {
 			log.WithField("addr", listenAddress).Info("grpc: server starting")

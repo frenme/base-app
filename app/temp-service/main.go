@@ -6,8 +6,10 @@ import (
 	grpcserver "shared/pkg/grpcserver"
 	"shared/pkg/logger"
 	"shared/pkg/middleware"
+	echopb "shared/pkg/proto/echo"
 	_ "temp/docs"
 	"temp/internal/db"
+	echoimpl "temp/internal/echo"
 	rediscache "temp/internal/modules/redis-cache"
 	handlers "temp/internal/modules/redis-cache/handlers/v1"
 	"temp/internal/repository"
@@ -15,6 +17,7 @@ import (
 	"github.com/gin-gonic/gin"
 	swaggerfiles "github.com/swaggo/files"
 	ginswagger "github.com/swaggo/gin-swagger"
+	"google.golang.org/grpc"
 )
 
 // @title Temp service
@@ -28,7 +31,9 @@ func main() {
 
 	db.InitConnections()
 	db.StartKafkaConsumers(context.Background())
-	grpcserver.Start(context.Background(), logger, ":"+os.Getenv("GRPC_PORT"))
+	grpcserver.Start(context.Background(), logger, ":"+os.Getenv("GRPC_PORT"), func(s *grpc.Server) {
+		echopb.RegisterEchoServiceServer(s, echoimpl.NewEchoServer())
+	})
 
 	gin.SetMode(gin.ReleaseMode)
 	router := gin.Default()

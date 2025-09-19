@@ -31,7 +31,7 @@ func main() {
 	logger := logger.New()
 
 	db.InitConnections()
-	grpcserver.Start(context.Background(), logger, ":"+os.Getenv("GRPC_PORT"))
+	grpcserver.Start(context.Background(), logger, ":"+os.Getenv("GRPC_PORT"), nil)
 
 	gin.SetMode(gin.ReleaseMode)
 	router := gin.Default()
