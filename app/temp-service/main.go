@@ -3,10 +3,10 @@ package main
 import (
 	"context"
 	"os"
-	grpcserver "shared/pkg/grpcserver"
+	grpcserver "shared/pkg/grps/grpcserver"
+	echopb "shared/pkg/grps/proto/echo"
 	"shared/pkg/logger"
 	"shared/pkg/middleware"
-	echopb "shared/pkg/proto/echo"
 	_ "temp/docs"
 	"temp/internal/db"
 	echoimpl "temp/internal/echo"

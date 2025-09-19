@@ -9,8 +9,10 @@ import (
 	"user/internal/repository"
 
 	sharedconfig "shared/pkg/config"
-	grpcserver "shared/pkg/grpcserver"
+	grpcserver "shared/pkg/grps/grpcserver"
+	echopb "shared/pkg/grps/proto/echo"
 	"shared/pkg/logger"
+	echoimpl "user/internal/echo"
 	auth "user/internal/modules/auth"
 	authhandlers "user/internal/modules/auth/handlers/v1"
 	user "user/internal/modules/user"
@@ -19,6 +21,7 @@ import (
 	"github.com/gin-gonic/gin"
 	swaggerfiles "github.com/swaggo/files"
 	ginswagger "github.com/swaggo/gin-swagger"
+	"google.golang.org/grpc"
 )
 
 // @title User service
@@ -31,7 +34,9 @@ func main() {
 	logger := logger.New()
 
 	db.InitConnections()
-	grpcserver.Start(context.Background(), logger, ":"+os.Getenv("GRPC_PORT"), nil)
+	grpcserver.Start(context.Background(), logger, ":"+os.Getenv("GRPC_PORT"), func(s *grpc.Server) {
+		echopb.RegisterEchoServiceServer(s, echoimpl.NewEchoServer())
+	})
 
 	gin.SetMode(gin.ReleaseMode)
 	router := gin.Default()

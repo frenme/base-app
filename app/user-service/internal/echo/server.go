@@ -12,5 +12,5 @@ type EchoServer struct {
 func NewEchoServer() *EchoServer { return &EchoServer{} }
 
 func (s *EchoServer) Echo(ctx context.Context, in *echopb.EchoRequest) (*echopb.EchoResponse, error) {
-	return &echopb.EchoResponse{Message: in.GetMessage()}, nil
+	return &echopb.EchoResponse{Message: "user-service:" + in.GetMessage()}, nil
 }
