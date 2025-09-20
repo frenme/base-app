@@ -13,5 +13,5 @@ func NewRoutes(handler *Handler) *Routes {
 }
 
 func (r *Routes) RegisterRoutes(group *gin.RouterGroup) {
-	group.GET("/echo-user", r.handler.EchoUser)
+	group.GET("/call-user-service-with-grpc", r.handler.PingUserServiceWithGRPS)
 }

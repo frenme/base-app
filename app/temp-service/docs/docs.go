@@ -15,7 +15,7 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
-        "/v1/echo-user": {
+        "/v1/call-user-service-with-grpc": {
             "get": {
                 "produces": [
                     "application/json"
@@ -23,7 +23,7 @@ const docTemplate = `{
                 "tags": [
                     "Temp"
                 ],
-                "summary": "Call user-service Echo via gRPC",
+                "summary": "Call user-service via gRPC",
                 "parameters": [
                     {
                         "type": "string",

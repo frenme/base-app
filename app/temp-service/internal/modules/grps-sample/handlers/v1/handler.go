@@ -24,14 +24,14 @@ func NewHandler(service *rediscache.Service, logger *logger.Logger) *Handler {
 	return &Handler{service: service, logger: logger}
 }
 
-// EchoUser call gRPC Echo from user-service
-// @Summary     Call user-service Echo via gRPC
+// PingUserServiceWithGRPS call with gRPC from user-service
+// @Summary     Call user-service via gRPC
 // @Tags        Temp
 // @Produce     json
 // @Param       message query string false "message" default(hi)
 // @Success     200  {object}  map[string]string
-// @Router      /v1/echo-user [get]
-func (h *Handler) EchoUser(c *gin.Context) {
+// @Router      /v1/call-user-service-with-grpc [get]
+func (h *Handler) PingUserServiceWithGRPS(c *gin.Context) {
 	addr := "user-service-golang:50051"
 	msg := c.Query("message")
 

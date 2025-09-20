@@ -12,10 +12,10 @@ import (
 	grpcserver "shared/pkg/grps/grpcserver"
 	echopb "shared/pkg/grps/proto/echo"
 	"shared/pkg/logger"
-    echoapp "user/internal/modules/echo"
-    echogrpc "user/internal/modules/echo/handlers/grpc"
 	auth "user/internal/modules/auth"
 	authhandlers "user/internal/modules/auth/handlers/v1"
+	echoapp "user/internal/modules/grps-sample"
+	echogrpc "user/internal/modules/grps-sample/handlers/v1"
 	user "user/internal/modules/user"
 	userhandlers "user/internal/modules/user/handlers/v1"
 
@@ -35,10 +35,10 @@ func main() {
 	logger := logger.New()
 
 	db.InitConnections()
-    echoService := echoapp.NewService()
-    grpcserver.Start(context.Background(), logger, ":"+os.Getenv("GRPC_PORT"), func(s *grpc.Server) {
-        echopb.RegisterEchoServiceServer(s, echogrpc.NewServer(echoService))
-    })
+	echoService := echoapp.NewService()
+	grpcserver.Start(context.Background(), logger, ":"+os.Getenv("GRPC_PORT"), func(s *grpc.Server) {
+		echopb.RegisterEchoServiceServer(s, echogrpc.NewServer(echoService))
+	})
 
 	gin.SetMode(gin.ReleaseMode)
 	router := gin.Default()

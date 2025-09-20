@@ -4,7 +4,7 @@ info:
   title: Temp service
   version: "1.0"
 paths:
-  /v1/echo-user:
+  /v1/call-user-service-with-grpc:
     get:
       parameters:
       - default: hi
@@ -21,7 +21,7 @@ paths:
             additionalProperties:
               type: string
             type: object
-      summary: Call user-service Echo via gRPC
+      summary: Call user-service via gRPC
       tags:
       - Temp
   /v1/kafka-message:
